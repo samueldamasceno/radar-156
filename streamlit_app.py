@@ -83,6 +83,28 @@ if tema_selecionado != "Todos":
     ]
 
 
+distritos = sorted(
+    filtered.loc[
+        filtered["distrito_valido"],
+        "distrito",
+    ]
+    .dropna()
+    .unique()
+)
+
+distrito_selecionado = st.selectbox(
+    "Distrito",
+    ["Todos"] + distritos,
+)
+
+
+if distrito_selecionado != "Todos":
+    filtered = filtered[
+        filtered["distrito"]
+        == distrito_selecionado
+    ]
+
+
 st.subheader("Dados processados")
 
 st.dataframe(
