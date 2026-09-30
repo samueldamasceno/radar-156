@@ -25,6 +25,49 @@ for arquivo in sorted(
         dtype=str,
     )
 
+    distrito = (
+        df["Distrito"]
+        .astype("string")
+        .str.strip()
+    )
+
+    numerico = distrito.str.fullmatch(
+        r"\d+",
+        na=False,
+    )
+
+    nome = (
+        distrito.notna()
+        & ~numerico
+    )
+
+    ausente = distrito.isna()
+
     print(
         f"Total: {len(df):,}"
+    )
+
+    print(
+        f"Com nome: {nome.sum():,} "
+        f"({nome.mean() * 100:.2f}%)"
+    )
+
+    print(
+        f"Com código numérico: {numerico.sum():,} "
+        f"({numerico.mean() * 100:.2f}%)"
+    )
+
+    print(
+        f"Sem distrito: {ausente.sum():,} "
+        f"({ausente.mean() * 100:.2f}%)"
+    )
+
+    print()
+    print("Top códigos numéricos:")
+
+    print(
+        distrito[numerico]
+        .value_counts()
+        .head(20)
+        .to_string()
     )
