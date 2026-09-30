@@ -144,15 +144,34 @@ semana_selecionada = st.selectbox(
 )
 
 
+volume_minimo = st.slider(
+    "Volume mínimo por sinal",
+    min_value=1,
+    max_value=50,
+    value=5,
+    step=1,
+    help=(
+        "Reduz ruído causado por combinações com "
+        "pouquíssimas solicitações."
+    ),
+)
+
+
 current = filtered[
     filtered["semana"]
     == semana_selecionada
 ].copy()
 
 
+signals = current[
+    current["solicitacoes"]
+    >= volume_minimo
+].copy()
+
+
 st.subheader("Dados da semana")
 
 st.dataframe(
-    current.head(20),
+    signals.head(20),
     use_container_width=True,
 )
