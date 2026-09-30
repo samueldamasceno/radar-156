@@ -41,6 +41,10 @@ COLUMN_MAP = {
 # ============================================================
 
 def detect_format(path: Path):
+    """
+    Detecta encoding e separador do CSV.
+    """
+
     encodings = [
         "utf-8-sig",
         "utf-8",
@@ -54,8 +58,11 @@ def detect_format(path: Path):
     ]
 
     for encoding in encodings:
+
         for separator in separators:
+
             try:
+
                 sample = pd.read_csv(
                     path,
                     encoding=encoding,
@@ -64,6 +71,7 @@ def detect_format(path: Path):
                 )
 
                 if len(sample.columns) >= 15:
+
                     return (
                         encoding,
                         separator,
@@ -79,6 +87,10 @@ def detect_format(path: Path):
 
 
 def clean_text(series):
+    """
+    Padroniza campos de texto.
+    """
+
     return (
         series
         .astype("string")
@@ -89,6 +101,18 @@ def clean_text(series):
 
 
 def clean_district(series):
+    """
+    Trata o campo Distrito.
+
+    A base possui:
+    - nomes de distritos;
+    - códigos numéricos;
+    - valores ausentes.
+
+    Para o MVP, somente nomes de distritos
+    são considerados territorialmente válidos.
+    """
+
     series = (
         series
         .astype("string")
@@ -96,6 +120,8 @@ def clean_district(series):
         .replace("", pd.NA)
     )
 
+    # Identifica valores compostos
+    # somente por números.
     numeric_mask = (
         series
         .str.fullmatch(
@@ -104,6 +130,8 @@ def clean_district(series):
         )
     )
 
+    # Códigos numéricos são transformados
+    # em valores não identificados.
     series = series.mask(
         numeric_mask,
         pd.NA,
@@ -126,8 +154,15 @@ def process_file(path: Path):
 
     print()
     print("=" * 80)
-    print(f"Processando: {path.name}")
-    print(f"Encoding: {encoding}")
+
+    print(
+        f"Processando: {path.name}"
+    )
+
+    print(
+        f"Encoding: {encoding}"
+    )
+
     print(
         f"Separador: "
         f"{repr(separator)}"
@@ -154,6 +189,10 @@ def process_file(path: Path):
             f"{chunk_number}"
         )
 
+        # ---------------------------------
+        # CONFERE COLUNAS
+        # ---------------------------------
+
         missing_columns = [
             column
             for column
@@ -162,12 +201,17 @@ def process_file(path: Path):
         ]
 
         if missing_columns:
+
             raise ValueError(
                 "Colunas ausentes: "
                 + ", ".join(
                     missing_columns
                 )
             )
+
+        # ---------------------------------
+        # SELEÇÃO E RENOMEAÇÃO
+        # ---------------------------------
 
         df = (
             chunk[
@@ -180,6 +224,10 @@ def process_file(path: Path):
                 columns=COLUMN_MAP
             )
         )
+
+        # ---------------------------------
+        # DATAS
+        # ---------------------------------
 
         df["data_abertura"] = (
             pd.to_datetime(
@@ -197,10 +245,16 @@ def process_file(path: Path):
             )
         )
 
+        # Remove registros sem
+        # data de abertura válida.
         df = df[
             df["data_abertura"]
             .notna()
         ].copy()
+
+        # ---------------------------------
+        # CAMPOS DE TEXTO
+        # ---------------------------------
 
         df["tema"] = clean_text(
             df["tema"]
@@ -214,14 +268,24 @@ def process_file(path: Path):
             df["status"]
         )
 
-        df["distrito"] = clean_district(
-            df["distrito"]
+        df["distrito"] = (
+            clean_district(
+                df["distrito"]
+            )
         )
+
+        # ---------------------------------
+        # DISTRITO VÁLIDO
+        # ---------------------------------
 
         df["distrito_valido"] = (
             df["distrito"]
             .ne("Não informado")
         )
+
+        # ---------------------------------
+        # STATUS
+        # ---------------------------------
 
         status_upper = (
             df["status"]
@@ -248,6 +312,10 @@ def process_file(path: Path):
             .eq("CANCELADA")
         ).astype("int8")
 
+        # ---------------------------------
+        # TEMPO DE ATENDIMENTO
+        # ---------------------------------
+
         df["tempo_dias"] = (
             (
                 df["data_finalizacao"]
@@ -258,6 +326,9 @@ def process_file(path: Path):
             / 86400
         )
 
+        # Só consideramos tempo
+        # de atendimento de solicitações
+        # efetivamente finalizadas.
         df.loc[
             status_upper.ne(
                 "FINALIZADA"
@@ -265,10 +336,18 @@ def process_file(path: Path):
             "tempo_dias",
         ] = np.nan
 
+        # Remove tempos impossíveis.
         df.loc[
             df["tempo_dias"] < 0,
             "tempo_dias",
         ] = np.nan
+
+        # ---------------------------------
+        # SEMANA
+        # ---------------------------------
+
+        # A semana passa a ser identificada
+        # pela segunda-feira correspondente.
 
         df["semana"] = (
             df["data_abertura"]
@@ -279,6 +358,10 @@ def process_file(path: Path):
                 unit="D",
             )
         ).dt.normalize()
+
+        # ---------------------------------
+        # AGREGAÇÃO
+        # ---------------------------------
 
         df["linha"] = 1
 
@@ -300,22 +383,27 @@ def process_file(path: Path):
                     "linha",
                     "sum",
                 ),
+
                 pendentes=(
                     "pendente",
                     "sum",
                 ),
+
                 finalizadas=(
                     "finalizada",
                     "sum",
                 ),
+
                 canceladas=(
                     "cancelada",
                     "sum",
                 ),
+
                 tempo_total=(
                     "tempo_dias",
                     "sum",
                 ),
+
                 tempo_n=(
                     "tempo_dias",
                     "count",
@@ -345,6 +433,7 @@ files = sorted(
 )
 
 if not files:
+
     raise FileNotFoundError(
         "Nenhum arquivo "
         "sp156_2026_q*.csv "
@@ -360,6 +449,7 @@ if not files:
 results = []
 
 for file in files:
+
     results.append(
         process_file(file)
     )
@@ -394,22 +484,27 @@ df = (
             "solicitacoes",
             "sum",
         ),
+
         pendentes=(
             "pendentes",
             "sum",
         ),
+
         finalizadas=(
             "finalizadas",
             "sum",
         ),
+
         canceladas=(
             "canceladas",
             "sum",
         ),
+
         tempo_total=(
             "tempo_total",
             "sum",
         ),
+
         tempo_n=(
             "tempo_n",
             "sum",
@@ -442,6 +537,7 @@ df["taxa_pendente"] = (
     )
 )
 
+
 df["taxa_finalizacao"] = (
     df["finalizadas"]
     / df[
@@ -452,6 +548,7 @@ df["taxa_finalizacao"] = (
     )
 )
 
+
 df["taxa_cancelamento"] = (
     df["canceladas"]
     / df[
@@ -461,6 +558,7 @@ df["taxa_cancelamento"] = (
         np.nan,
     )
 )
+
 
 df["tempo_medio_dias"] = (
     df["tempo_total"]
@@ -628,5 +726,57 @@ df["score_tempo"] = (
         df[
             "tempo_medio_dias"
         ]
+    )
+)
+
+
+# ============================================================
+# ÍNDICE DE ATENÇÃO
+# ============================================================
+
+df["indice_atencao"] = (
+    0.40
+    * df["score_crescimento"]
+
+    + 0.35
+    * df["score_pendencia"]
+
+    + 0.25
+    * df["score_tempo"]
+).round(1)
+
+
+# Registros sem distrito válido
+# não recebem índice territorial.
+df.loc[
+    ~valid_mask,
+    "indice_atencao",
+] = np.nan
+
+
+# ============================================================
+# FAIXA DE ATENÇÃO
+# ============================================================
+
+def faixa_atencao(score):
+
+    if pd.isna(score):
+        return "Não aplicável"
+
+    if score >= 75:
+        return "Elevada"
+
+    if score >= 50:
+        return "Moderada"
+
+    return "Regular"
+
+
+df["faixa_atencao"] = (
+    df[
+        "indice_atencao"
+    ]
+    .apply(
+        faixa_atencao
     )
 )
