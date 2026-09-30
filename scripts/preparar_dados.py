@@ -41,10 +41,6 @@ COLUMN_MAP = {
 # ============================================================
 
 def detect_format(path: Path):
-    """
-    Detecta encoding e separador do CSV.
-    """
-
     encodings = [
         "utf-8-sig",
         "utf-8",
@@ -58,11 +54,8 @@ def detect_format(path: Path):
     ]
 
     for encoding in encodings:
-
         for separator in separators:
-
             try:
-
                 sample = pd.read_csv(
                     path,
                     encoding=encoding,
@@ -71,7 +64,6 @@ def detect_format(path: Path):
                 )
 
                 if len(sample.columns) >= 15:
-
                     return (
                         encoding,
                         separator,
@@ -87,10 +79,6 @@ def detect_format(path: Path):
 
 
 def clean_text(series):
-    """
-    Padroniza campos de texto.
-    """
-
     return (
         series
         .astype("string")
@@ -101,18 +89,6 @@ def clean_text(series):
 
 
 def clean_district(series):
-    """
-    Trata o campo Distrito.
-
-    A base possui:
-    - nomes de distritos;
-    - códigos numéricos;
-    - valores ausentes.
-
-    Para o MVP, somente nomes de distritos
-    são considerados territorialmente válidos.
-    """
-
     series = (
         series
         .astype("string")
@@ -150,15 +126,8 @@ def process_file(path: Path):
 
     print()
     print("=" * 80)
-
-    print(
-        f"Processando: {path.name}"
-    )
-
-    print(
-        f"Encoding: {encoding}"
-    )
-
+    print(f"Processando: {path.name}")
+    print(f"Encoding: {encoding}")
     print(
         f"Separador: "
         f"{repr(separator)}"
@@ -193,7 +162,6 @@ def process_file(path: Path):
         ]
 
         if missing_columns:
-
             raise ValueError(
                 "Colunas ausentes: "
                 + ", ".join(
@@ -246,10 +214,8 @@ def process_file(path: Path):
             df["status"]
         )
 
-        df["distrito"] = (
-            clean_district(
-                df["distrito"]
-            )
+        df["distrito"] = clean_district(
+            df["distrito"]
         )
 
         df["distrito_valido"] = (
@@ -334,27 +300,22 @@ def process_file(path: Path):
                     "linha",
                     "sum",
                 ),
-
                 pendentes=(
                     "pendente",
                     "sum",
                 ),
-
                 finalizadas=(
                     "finalizada",
                     "sum",
                 ),
-
                 canceladas=(
                     "cancelada",
                     "sum",
                 ),
-
                 tempo_total=(
                     "tempo_dias",
                     "sum",
                 ),
-
                 tempo_n=(
                     "tempo_dias",
                     "count",
@@ -384,7 +345,6 @@ files = sorted(
 )
 
 if not files:
-
     raise FileNotFoundError(
         "Nenhum arquivo "
         "sp156_2026_q*.csv "
@@ -400,7 +360,6 @@ if not files:
 results = []
 
 for file in files:
-
     results.append(
         process_file(file)
     )
@@ -435,30 +394,83 @@ df = (
             "solicitacoes",
             "sum",
         ),
-
         pendentes=(
             "pendentes",
             "sum",
         ),
-
         finalizadas=(
             "finalizadas",
             "sum",
         ),
-
         canceladas=(
             "canceladas",
             "sum",
         ),
-
         tempo_total=(
             "tempo_total",
             "sum",
         ),
-
         tempo_n=(
             "tempo_n",
             "sum",
         ),
+    )
+)
+
+
+# ============================================================
+# MARCA DISTRITOS VÁLIDOS
+# ============================================================
+
+df["distrito_valido"] = (
+    df["distrito"]
+    .ne("Não informado")
+)
+
+
+# ============================================================
+# INDICADORES OPERACIONAIS
+# ============================================================
+
+df["taxa_pendente"] = (
+    df["pendentes"]
+    / df[
+        "solicitacoes"
+    ].replace(
+        0,
+        np.nan,
+    )
+)
+
+
+df["taxa_finalizacao"] = (
+    df["finalizadas"]
+    / df[
+        "solicitacoes"
+    ].replace(
+        0,
+        np.nan,
+    )
+)
+
+
+df["taxa_cancelamento"] = (
+    df["canceladas"]
+    / df[
+        "solicitacoes"
+    ].replace(
+        0,
+        np.nan,
+    )
+)
+
+
+df["tempo_medio_dias"] = (
+    df["tempo_total"]
+    / df[
+        "tempo_n"
+    ].replace(
+        0,
+        np.nan,
     )
 )
