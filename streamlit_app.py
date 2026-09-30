@@ -173,6 +173,20 @@ ranking = territorial_current[
 ].copy()
 
 
+ranking = ranking.sort_values(
+    [
+        "indice_atencao",
+        "score_anomalia",
+        "solicitacoes",
+    ],
+    ascending=[
+        False,
+        False,
+        False,
+    ],
+)
+
+
 st.subheader("Sinais encontrados")
 
 st.dataframe(
