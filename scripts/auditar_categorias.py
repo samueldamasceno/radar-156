@@ -36,6 +36,8 @@ arquivos = sorted(
     RAW_DIR.glob("sp156_2026_q*.csv")
 )
 
+frames = []
+
 
 for arquivo in arquivos:
 
@@ -87,3 +89,44 @@ for arquivo in arquivos:
         "Prefeituras após normalização:",
         df["prefeitura_normalizada"].nunique(),
     )
+
+    df["arquivo"] = arquivo.name
+
+    frames.append(df)
+
+
+todos = pd.concat(
+    frames,
+    ignore_index=True,
+)
+
+
+print()
+print("=" * 80)
+print("BASE COMPLETA")
+print("=" * 80)
+
+print()
+print(
+    "Distritos originais:",
+    todos["Distrito"].nunique(dropna=True),
+)
+
+print(
+    "Distritos normalizados:",
+    todos["distrito_normalizado"].nunique(),
+)
+
+print()
+
+print(
+    "Prefeituras originais:",
+    todos["Prefeitura Operacional"].nunique(
+        dropna=True
+    ),
+)
+
+print(
+    "Prefeituras normalizadas:",
+    todos["prefeitura_normalizada"].nunique(),
+)
