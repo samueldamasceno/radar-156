@@ -208,7 +208,6 @@ if pagina == "Visão geral":
     total = int(
         current["solicitacoes"].sum()
     )
-
     pendentes = int(
         current["pendentes"].sum()
     )
@@ -251,26 +250,22 @@ if pagina == "Visão geral":
         "Solicitações",
         format_integer(total),
     )
-
     col2.metric(
         "Pendentes",
         format_percent(
             taxa_pendente_geral
         ),
     )
-
     col3.metric(
         "Cobertura territorial",
         format_percent(cobertura),
     )
-
     col4.metric(
         "Atenção elevada",
         format_integer(
             sinais_elevados
         ),
     )
-
     col5.metric(
         "Sinais atípicos",
         format_integer(anomalias),
@@ -412,10 +407,9 @@ if pagina == "Visão geral":
             "Nenhum sinal encontrado com "
             "os filtros atuais."
         )
+
     else:
-        ranking_display = (
-            ranking.head(15).copy()
-        )
+        ranking_display = ranking.head(15).copy()
 
         ranking_display[
             "Variação"
@@ -528,8 +522,6 @@ elif pagina == "Radar de atenção":
 
         plot_df = ranking.copy()
 
-        # Evita que valores extremos comprimam
-        # completamente o restante do gráfico.
         plot_df[
             "variacao_grafico"
         ] = (
@@ -548,8 +540,7 @@ elif pagina == "Radar de atenção":
         ] = (
             plot_df[
                 "taxa_pendente"
-            ]
-            * 100
+            ] * 100
         )
 
         fig_radar = px.scatter(
@@ -557,6 +548,12 @@ elif pagina == "Radar de atenção":
             x="variacao_grafico",
             y="pendencia_percentual",
             size="solicitacoes",
+            color="indice_atencao",
+            color_continuous_scale=[
+                [0.0, "#4D37FF"],
+                [0.55, "#8A5BFF"],
+                [1.0, "#FF5C35"],
+            ],
             size_max=34,
             hover_name="servico",
             hover_data={
@@ -572,6 +569,8 @@ elif pagina == "Radar de atenção":
                 "Variação da demanda (%)",
                 "pendencia_percentual":
                 "Solicitações pendentes (%)",
+                "indice_atencao":
+                "Índice",
                 "distrito":
                 "Distrito",
                 "tema":
@@ -579,6 +578,24 @@ elif pagina == "Radar de atenção":
                 "solicitacoes":
                 "Solicitações",
             },
+        )
+
+        fig_radar.add_vline(
+            x=0,
+            line_dash="dash",
+            line_width=1,
+        )
+
+        fig_radar.add_hline(
+            y=50,
+            line_dash="dash",
+            line_width=1,
+        )
+
+        fig_radar.update_layout(
+            coloraxis_colorbar=dict(
+                title="Índice",
+            ),
         )
 
         st.plotly_chart(
