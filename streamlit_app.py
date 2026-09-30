@@ -208,6 +208,7 @@ if pagina == "Visão geral":
     total = int(
         current["solicitacoes"].sum()
     )
+
     pendentes = int(
         current["pendentes"].sum()
     )
@@ -250,22 +251,26 @@ if pagina == "Visão geral":
         "Solicitações",
         format_integer(total),
     )
+
     col2.metric(
         "Pendentes",
         format_percent(
             taxa_pendente_geral
         ),
     )
+
     col3.metric(
         "Cobertura territorial",
         format_percent(cobertura),
     )
+
     col4.metric(
         "Atenção elevada",
         format_integer(
             sinais_elevados
         ),
     )
+
     col5.metric(
         "Sinais atípicos",
         format_integer(anomalias),
@@ -383,8 +388,7 @@ if pagina == "Visão geral":
         orientation="h",
         hover_name=category_column,
         labels={
-            "solicitacoes":
-            "Solicitações",
+            "solicitacoes": "Solicitações",
             "categoria_grafico": "",
         },
     )
@@ -408,9 +412,10 @@ if pagina == "Visão geral":
             "Nenhum sinal encontrado com "
             "os filtros atuais."
         )
-
     else:
-        ranking_display = ranking.head(15).copy()
+        ranking_display = (
+            ranking.head(15).copy()
+        )
 
         ranking_display[
             "Variação"
@@ -423,8 +428,7 @@ if pagina == "Visão geral":
         ] = (
             ranking_display[
                 "taxa_pendente"
-            ]
-            * 100
+            ] * 100
         )
 
         ranking_display[
@@ -524,6 +528,21 @@ elif pagina == "Radar de atenção":
 
         plot_df = ranking.copy()
 
+        # Evita que valores extremos comprimam
+        # completamente o restante do gráfico.
+        plot_df[
+            "variacao_grafico"
+        ] = (
+            plot_df[
+                "variacao_percentual"
+            ]
+            .clip(
+                lower=-100,
+                upper=500,
+            )
+            .fillna(0)
+        )
+
         plot_df[
             "pendencia_percentual"
         ] = (
@@ -535,7 +554,7 @@ elif pagina == "Radar de atenção":
 
         fig_radar = px.scatter(
             plot_df,
-            x="variacao_percentual",
+            x="variacao_grafico",
             y="pendencia_percentual",
             size="solicitacoes",
             size_max=34,
@@ -545,11 +564,11 @@ elif pagina == "Radar de atenção":
                 "tema": True,
                 "solicitacoes": True,
                 "indice_atencao": ":.1f",
-                "variacao_percentual": ":.1f",
+                "variacao_grafico": ":.1f",
                 "pendencia_percentual": ":.1f",
             },
             labels={
-                "variacao_percentual":
+                "variacao_grafico":
                 "Variação da demanda (%)",
                 "pendencia_percentual":
                 "Solicitações pendentes (%)",
@@ -565,6 +584,13 @@ elif pagina == "Radar de atenção":
         st.plotly_chart(
             fig_radar,
             use_container_width=True,
+        )
+
+        st.caption(
+            "Valores de variação superiores a 500% "
+            "são limitados visualmente no gráfico para "
+            "preservar a legibilidade. Os valores reais "
+            "continuam armazenados no dataset."
         )
 
 
