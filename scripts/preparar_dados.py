@@ -97,3 +97,138 @@ def clean_text(series):
         .replace("", pd.NA)
         .fillna("Não informado")
     )
+
+
+def clean_district(series):
+    """
+    Trata o campo Distrito.
+
+    A base possui:
+    - nomes de distritos;
+    - códigos numéricos;
+    - valores ausentes.
+
+    Para o MVP, somente nomes de distritos
+    são considerados territorialmente válidos.
+    """
+
+    series = (
+        series
+        .astype("string")
+        .str.strip()
+        .replace("", pd.NA)
+    )
+
+    # Identifica valores compostos
+    # somente por números.
+    numeric_mask = (
+        series
+        .str.fullmatch(
+            r"\d+",
+            na=False,
+        )
+    )
+
+    # Códigos numéricos são transformados
+    # em valores não identificados.
+    series = series.mask(
+        numeric_mask,
+        pd.NA,
+    )
+
+    return series.fillna(
+        "Não informado"
+    )
+
+
+# ============================================================
+# PROCESSAMENTO DE CADA CSV
+# ============================================================
+
+def process_file(path: Path):
+
+    encoding, separator = (
+        detect_format(path)
+    )
+
+    print()
+    print("=" * 80)
+
+    print(
+        f"Processando: {path.name}"
+    )
+
+    print(
+        f"Encoding: {encoding}"
+    )
+
+    print(
+        f"Separador: "
+        f"{repr(separator)}"
+    )
+
+    partial_results = []
+
+    reader = pd.read_csv(
+        path,
+        encoding=encoding,
+        sep=separator,
+        dtype=str,
+        chunksize=150_000,
+        low_memory=False,
+    )
+
+    for chunk_number, chunk in enumerate(
+        reader,
+        start=1,
+    ):
+
+        print(
+            f"  Processando chunk "
+            f"{chunk_number}"
+        )
+
+        # ---------------------------------
+        # CONFERE COLUNAS
+        # ---------------------------------
+
+        missing_columns = [
+            column
+            for column
+            in COLUMN_MAP.keys()
+            if column not in chunk.columns
+        ]
+
+        if missing_columns:
+
+            raise ValueError(
+                "Colunas ausentes: "
+                + ", ".join(
+                    missing_columns
+                )
+            )
+
+        # ---------------------------------
+        # SELEÇÃO E RENOMEAÇÃO
+        # ---------------------------------
+
+        df = (
+            chunk[
+                list(
+                    COLUMN_MAP.keys()
+                )
+            ]
+            .copy()
+            .rename(
+                columns=COLUMN_MAP
+            )
+        )
+
+        partial_results.append(
+            df
+        )
+
+    return pd.concat(
+        partial_results,
+        ignore_index=True,
+    )
