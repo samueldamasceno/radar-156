@@ -19,3 +19,19 @@ for file in sorted(
         ],
         dtype=str,
     )
+
+    print()
+    print("STATUS:")
+    print(
+        df["Status"]
+        .value_counts(dropna=False)
+        .to_string()
+    )
+
+    print()
+    print("SEM DATA DE FINALIZAÇÃO:")
+    print(
+        df["Data de Finalização"]
+        .isna()
+        .value_counts()
+    )
