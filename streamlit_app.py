@@ -1,4 +1,5 @@
 from pathlib import Path
+import textwrap
 
 import numpy as np
 import pandas as pd
@@ -277,6 +278,7 @@ col1, col2, col3, col4, col5 = (
     st.columns(5)
 )
 
+
 col1.metric(
     "Solicitações",
     format_integer(total),
@@ -404,15 +406,36 @@ top_categories = (
 )
 
 
+top_categories[
+    "categoria_grafico"
+] = (
+    top_categories[
+        category_column
+    ]
+    .astype(str)
+    .map(
+        lambda value: "<br>".join(
+            textwrap.wrap(
+                str(value),
+                width=52,
+                break_long_words=False,
+                break_on_hyphens=False,
+            )
+        )
+    )
+)
+
+
 fig_categories = px.bar(
     top_categories,
     x="solicitacoes",
-    y=category_column,
+    y="categoria_grafico",
     orientation="h",
+    hover_name=category_column,
     labels={
         "solicitacoes":
         "Solicitações",
-        category_column: "",
+        "categoria_grafico": "",
     },
 )
 
