@@ -49,9 +49,18 @@ df = load_data()
 st.title("Radar 156")
 
 st.write(
-    "Monitoramento da demanda por "
-    "serviços municipais."
+    "Monitoramento de alterações relevantes "
+    "na demanda por serviços municipais."
 )
+
+st.caption(
+    "O radar combina comportamento recente, "
+    "pendência e tempo de atendimento para "
+    "destacar sinais que merecem investigação."
+)
+
+
+st.subheader("Dados processados")
 
 st.dataframe(
     df.head(20),
