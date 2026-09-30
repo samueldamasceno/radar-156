@@ -9,9 +9,24 @@ DATA_FILE = Path(
 )
 
 
-df = pd.read_parquet(
-    DATA_FILE
-)
+@st.cache_data
+def load_data():
+    """
+    Carrega o dataset analítico já processado.
+    """
+
+    df = pd.read_parquet(
+        DATA_FILE
+    )
+
+    df["semana"] = pd.to_datetime(
+        df["semana"]
+    )
+
+    return df
+
+
+df = load_data()
 
 
 st.title("Radar 156")
