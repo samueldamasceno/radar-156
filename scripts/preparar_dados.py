@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 
@@ -281,6 +282,65 @@ def process_file(path: Path):
             df["distrito"]
             .ne("Não informado")
         )
+
+        # ---------------------------------
+        # STATUS
+        # ---------------------------------
+
+        status_upper = (
+            df["status"]
+            .str.upper()
+            .str.strip()
+        )
+
+        df["pendente"] = (
+            status_upper.isin(
+                [
+                    "ABERTO",
+                    "EM ANDAMENTO",
+                ]
+            )
+        ).astype("int8")
+
+        df["finalizada"] = (
+            status_upper
+            .eq("FINALIZADA")
+        ).astype("int8")
+
+        df["cancelada"] = (
+            status_upper
+            .eq("CANCELADA")
+        ).astype("int8")
+
+        # ---------------------------------
+        # TEMPO DE ATENDIMENTO
+        # ---------------------------------
+
+        df["tempo_dias"] = (
+            (
+                df["data_finalizacao"]
+                - df["data_abertura"]
+            )
+            .dt
+            .total_seconds()
+            / 86400
+        )
+
+        # Só consideramos tempo
+        # de atendimento de solicitações
+        # efetivamente finalizadas.
+        df.loc[
+            status_upper.ne(
+                "FINALIZADA"
+            ),
+            "tempo_dias",
+        ] = np.nan
+
+        # Remove tempos impossíveis.
+        df.loc[
+            df["tempo_dias"] < 0,
+            "tempo_dias",
+        ] = np.nan
 
         partial_results.append(
             df
