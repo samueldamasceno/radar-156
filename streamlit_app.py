@@ -34,6 +34,59 @@ def load_data():
     return df
 
 
+def format_integer(value):
+    """
+    Formata inteiros no padrão brasileiro.
+    """
+
+    if pd.isna(value):
+        return "N/D"
+
+    return (
+        f"{int(value):,}"
+        .replace(",", ".")
+    )
+
+
+def format_percent(value):
+    """
+    Recebe proporção 0-1.
+    """
+
+    if pd.isna(value):
+        return "N/D"
+
+    return (
+        f"{value * 100:.1f}%"
+        .replace(".", ",")
+    )
+
+
+def format_change(value):
+    """
+    Recebe percentual já em pontos percentuais.
+    Ex: 25.5 significa +25,5%.
+    """
+
+    if pd.isna(value):
+        return "Sem baseline"
+
+    return (
+        f"{value:+.1f}%"
+        .replace(".", ",")
+    )
+
+
+def format_days(value):
+    if pd.isna(value):
+        return "N/D"
+
+    return (
+        f"{value:.1f} dias"
+        .replace(".", ",")
+    )
+
+
 if not DATA_FILE.exists():
     st.error(
         "O arquivo radar156.parquet não foi encontrado. "
@@ -121,8 +174,6 @@ if not semanas:
     st.stop()
 
 
-# A última semana disponível começa em 29/06 e é parcial.
-# Por isso, a penúltima semana é a referência inicial.
 if len(semanas) >= 2:
     default_week_index = len(semanas) - 2
 else:
