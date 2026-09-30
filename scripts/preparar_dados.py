@@ -83,3 +83,17 @@ def detect_format(path: Path):
         f"Não foi possível identificar "
         f"o formato de {path}"
     )
+
+
+def clean_text(series):
+    """
+    Padroniza campos de texto.
+    """
+
+    return (
+        series
+        .astype("string")
+        .str.strip()
+        .replace("", pd.NA)
+        .fillna("Não informado")
+    )
