@@ -32,17 +32,12 @@ def load_data():
 def format_integer(value):
     if pd.isna(value):
         return "N/D"
-
-    return (
-        f"{int(value):,}"
-        .replace(",", ".")
-    )
+    return f"{int(value):,}".replace(",", ".")
 
 
 def format_percent(value):
     if pd.isna(value):
         return "N/D"
-
     return (
         f"{value * 100:.1f}%"
         .replace(".", ",")
@@ -52,7 +47,6 @@ def format_percent(value):
 def format_change(value):
     if pd.isna(value):
         return "Sem baseline"
-
     return (
         f"{value:+.1f}%"
         .replace(".", ",")
@@ -62,7 +56,6 @@ def format_change(value):
 def format_days(value):
     if pd.isna(value):
         return "N/D"
-
     return (
         f"{value:.1f} dias"
         .replace(".", ",")
@@ -108,16 +101,13 @@ st.caption(
 st.subheader("Filtros")
 
 temas = sorted(
-    df["tema"]
-    .dropna()
-    .unique()
+    df["tema"].dropna().unique()
 )
 
 tema_selecionado = st.selectbox(
     "Tema",
     ["Todos"] + temas,
 )
-
 
 filtered = df.copy()
 
@@ -142,7 +132,6 @@ distrito_selecionado = st.selectbox(
     ["Todos"] + distritos,
 )
 
-
 if distrito_selecionado != "Todos":
     filtered = filtered[
         filtered["distrito"]
@@ -157,7 +146,6 @@ semanas = sorted(
         .unique()
     )
 )
-
 
 if not semanas:
     st.warning(
@@ -201,11 +189,9 @@ current = filtered[
     == semana_selecionada
 ].copy()
 
-
 territorial_current = current[
     current["distrito_valido"]
 ].copy()
-
 
 ranking = territorial_current[
     (
@@ -217,18 +203,13 @@ ranking = territorial_current[
     ].notna()
 ].copy()
 
-
 ranking = ranking.sort_values(
     [
         "indice_atencao",
         "score_anomalia",
         "solicitacoes",
     ],
-    ascending=[
-        False,
-        False,
-        False,
-    ],
+    ascending=[False, False, False],
 )
 
 
@@ -246,12 +227,11 @@ if pagina == "Visão geral":
         current["pendentes"].sum()
     )
 
-    if total > 0:
-        taxa_pendente_geral = (
-            pendentes / total
-        )
-    else:
-        taxa_pendente_geral = np.nan
+    taxa_pendente_geral = (
+        pendentes / total
+        if total > 0
+        else np.nan
+    )
 
     territorial_volume = int(
         current.loc[
@@ -260,12 +240,11 @@ if pagina == "Visão geral":
         ].sum()
     )
 
-    if total > 0:
-        cobertura = (
-            territorial_volume / total
-        )
-    else:
-        cobertura = np.nan
+    cobertura = (
+        territorial_volume / total
+        if total > 0
+        else np.nan
+    )
 
     sinais_elevados = int(
         (
@@ -317,7 +296,6 @@ if pagina == "Visão geral":
         "identificado."
     )
 
-
     st.subheader(
         "Evolução das solicitações"
     )
@@ -363,13 +341,11 @@ if pagina == "Visão geral":
         "com semanas completas."
     )
 
-
     if tema_selecionado == "Todos":
         chart_title = (
             "Temas com maior demanda"
         )
         category_column = "tema"
-
     else:
         chart_title = (
             "Serviços com maior demanda"
@@ -437,7 +413,6 @@ if pagina == "Visão geral":
         use_container_width=True,
     )
 
-
     st.subheader(
         "Pontos que merecem investigação"
     )
@@ -448,18 +423,14 @@ if pagina == "Visão geral":
     )
 
     if ranking.empty:
-
         st.info(
             "Nenhum sinal encontrado com "
             "os filtros atuais."
         )
 
     else:
-
         ranking_display = (
-            ranking
-            .head(15)
-            .copy()
+            ranking.head(15).copy()
         )
 
         ranking_display[
@@ -555,9 +526,32 @@ if pagina == "Visão geral":
 
 
 elif pagina == "Radar de atenção":
-    st.info(
-        "Visualização do radar em desenvolvimento."
+
+    st.subheader(
+        "Radar de atenção"
     )
+
+    st.markdown(
+        "Cada ponto representa uma combinação entre "
+        "**distrito e serviço** na semana selecionada. "
+        "O eixo horizontal mostra a mudança de demanda "
+        "em relação ao comportamento recente. "
+        "O eixo vertical mostra a proporção de solicitações "
+        "ainda abertas ou em andamento. "
+        "O tamanho representa o volume de solicitações."
+    )
+
+    if ranking.empty:
+        st.info(
+            "Não existem sinais disponíveis "
+            "para esses filtros."
+        )
+
+    else:
+        st.write(
+            "Sinais disponíveis:",
+            len(ranking),
+        )
 
 
 elif pagina == "Investigar sinal":
