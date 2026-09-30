@@ -60,9 +60,32 @@ st.caption(
 )
 
 
+st.subheader("Filtros")
+
+temas = sorted(
+    df["tema"]
+    .dropna()
+    .unique()
+)
+
+tema_selecionado = st.selectbox(
+    "Tema",
+    ["Todos"] + temas,
+)
+
+
+filtered = df.copy()
+
+if tema_selecionado != "Todos":
+    filtered = filtered[
+        filtered["tema"]
+        == tema_selecionado
+    ]
+
+
 st.subheader("Dados processados")
 
 st.dataframe(
-    df.head(20),
+    filtered.head(20),
     use_container_width=True,
 )
