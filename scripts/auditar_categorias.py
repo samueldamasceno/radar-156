@@ -1,9 +1,35 @@
 from pathlib import Path
+import re
+import unicodedata
 
 import pandas as pd
 
 
 RAW_DIR = Path("data/raw")
+
+
+def normalizar_texto(valor):
+    if pd.isna(valor):
+        return "NAO INFORMADO"
+
+    valor = str(valor).strip().upper()
+
+    # Remove acentos
+    valor = unicodedata.normalize("NFKD", valor)
+    valor = "".join(
+        char
+        for char in valor
+        if not unicodedata.combining(char)
+    )
+
+    # Padroniza diferentes tipos de apóstrofo
+    valor = valor.replace("’", "'")
+    valor = valor.replace("`", "'")
+
+    # Remove espaços duplicados
+    valor = re.sub(r"\s+", " ", valor)
+
+    return valor
 
 
 arquivos = sorted(
@@ -40,4 +66,24 @@ for arquivo in arquivos:
         df["Prefeitura Operacional"].nunique(
             dropna=True
         ),
+    )
+
+    df["distrito_normalizado"] = (
+        df["Distrito"]
+        .apply(normalizar_texto)
+    )
+
+    df["prefeitura_normalizada"] = (
+        df["Prefeitura Operacional"]
+        .apply(normalizar_texto)
+    )
+
+    print(
+        "Distritos após normalização:",
+        df["distrito_normalizado"].nunique(),
+    )
+
+    print(
+        "Prefeituras após normalização:",
+        df["prefeitura_normalizada"].nunique(),
     )
