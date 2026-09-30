@@ -26,6 +26,15 @@ def load_data():
     return df
 
 
+if not DATA_FILE.exists():
+    st.error(
+        "O arquivo radar156.parquet não foi encontrado. "
+        "Execute primeiro: python scripts/preparar_dados.py"
+    )
+
+    st.stop()
+
+
 df = load_data()
 
 
