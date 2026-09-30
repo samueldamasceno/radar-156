@@ -20,10 +20,6 @@ st.set_page_config(
 
 @st.cache_data
 def load_data():
-    """
-    Carrega o dataset analítico já processado.
-    """
-
     df = pd.read_parquet(
         DATA_FILE
     )
@@ -248,6 +244,23 @@ else:
     taxa_pendente_geral = np.nan
 
 
+territorial_volume = int(
+    current.loc[
+        current["distrito_valido"],
+        "solicitacoes",
+    ].sum()
+)
+
+
+if total > 0:
+    cobertura = (
+        territorial_volume
+        / total
+    )
+else:
+    cobertura = np.nan
+
+
 sinais_elevados = int(
     (
         ranking["indice_atencao"]
@@ -261,7 +274,9 @@ anomalias = int(
 )
 
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = (
+    st.columns(5)
+)
 
 
 col1.metric(
@@ -277,17 +292,31 @@ col2.metric(
 )
 
 col3.metric(
+    "Cobertura territorial",
+    format_percent(
+        cobertura
+    ),
+)
+
+col4.metric(
     "Atenção elevada",
     format_integer(
         sinais_elevados
     ),
 )
 
-col4.metric(
+col5.metric(
     "Sinais atípicos",
     format_integer(
         anomalias
     ),
+)
+
+
+st.caption(
+    "Cobertura territorial representa a parcela "
+    "das solicitações que possui distrito nominal "
+    "identificado."
 )
 
 
