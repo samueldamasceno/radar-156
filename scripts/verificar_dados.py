@@ -37,3 +37,17 @@ for file in sorted(RAW_DIR.glob("*.csv")):
 
     print(f"Encoding: {encoding}")
     print(f"Separador: {repr(separator)}")
+
+    df = pd.read_csv(
+        file,
+        encoding=encoding,
+        sep=separator,
+        nrows=5,
+    )
+
+    print("\nColunas:")
+    for i, column in enumerate(df.columns, start=1):
+        print(f"{i:02d}. {column}")
+
+    print("\nPrimeiras linhas:")
+    print(df.head())
