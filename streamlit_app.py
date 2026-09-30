@@ -22,6 +22,10 @@ st.set_page_config(
 
 @st.cache_data
 def load_data():
+    """
+    Carrega o dataset analítico já processado.
+    """
+
     df = pd.read_parquet(
         DATA_FILE
     )
@@ -34,6 +38,10 @@ def load_data():
 
 
 def format_integer(value):
+    """
+    Formata inteiros no padrão brasileiro.
+    """
+
     if pd.isna(value):
         return "N/D"
 
@@ -44,6 +52,10 @@ def format_integer(value):
 
 
 def format_percent(value):
+    """
+    Recebe proporção 0-1.
+    """
+
     if pd.isna(value):
         return "N/D"
 
@@ -54,6 +66,11 @@ def format_percent(value):
 
 
 def format_change(value):
+    """
+    Recebe percentual já em pontos percentuais.
+    Ex: 25.5 significa +25,5%.
+    """
+
     if pd.isna(value):
         return "Sem baseline"
 
@@ -130,6 +147,7 @@ distritos = sorted(
     .unique()
 )
 
+
 distrito_selecionado = st.selectbox(
     "Distrito",
     ["Todos"] + distritos,
@@ -154,12 +172,13 @@ semanas = sorted(
 
 if not semanas:
     st.warning(
-        "Nenhum dado encontrado para "
-        "os filtros selecionados."
+        "Nenhum dado encontrado para os filtros selecionados."
     )
     st.stop()
 
 
+# A última semana disponível começa em 29/06 e é parcial.
+# Por isso, a penúltima semana é a referência inicial.
 if len(semanas) >= 2:
     default_week_index = len(semanas) - 2
 else:
@@ -224,6 +243,10 @@ ranking = ranking.sort_values(
 )
 
 
+# ============================================================
+# VISÃO GERAL
+# ============================================================
+
 st.subheader(
     "Situação na semana selecionada"
 )
@@ -233,6 +256,7 @@ total = int(
     current["solicitacoes"].sum()
 )
 
+
 pendentes = int(
     current["pendentes"].sum()
 )
@@ -240,7 +264,8 @@ pendentes = int(
 
 if total > 0:
     taxa_pendente_geral = (
-        pendentes / total
+        pendentes
+        / total
     )
 else:
     taxa_pendente_geral = np.nan
@@ -248,7 +273,9 @@ else:
 
 territorial_volume = int(
     current.loc[
-        current["distrito_valido"],
+        current[
+            "distrito_valido"
+        ],
         "solicitacoes",
     ].sum()
 )
@@ -256,7 +283,8 @@ territorial_volume = int(
 
 if total > 0:
     cobertura = (
-        territorial_volume / total
+        territorial_volume
+        / total
     )
 else:
     cobertura = np.nan
@@ -264,13 +292,18 @@ else:
 
 sinais_elevados = int(
     (
-        ranking["indice_atencao"]
+        ranking[
+            "indice_atencao"
+        ]
         >= 75
     ).sum()
 )
 
+
 anomalias = int(
-    ranking["anomalia"].sum()
+    ranking[
+        "anomalia"
+    ].sum()
 )
 
 
@@ -281,8 +314,11 @@ col1, col2, col3, col4, col5 = (
 
 col1.metric(
     "Solicitações",
-    format_integer(total),
+    format_integer(
+        total
+    ),
 )
+
 
 col2.metric(
     "Pendentes",
@@ -291,10 +327,14 @@ col2.metric(
     ),
 )
 
+
 col3.metric(
     "Cobertura territorial",
-    format_percent(cobertura),
+    format_percent(
+        cobertura
+    ),
 )
+
 
 col4.metric(
     "Atenção elevada",
@@ -303,9 +343,12 @@ col4.metric(
     ),
 )
 
+
 col5.metric(
     "Sinais atípicos",
-    format_integer(anomalias),
+    format_integer(
+        anomalias
+    ),
 )
 
 
@@ -315,6 +358,10 @@ st.caption(
     "identificado."
 )
 
+
+# ----------------------------------------
+# SÉRIE TEMPORAL
+# ----------------------------------------
 
 st.subheader(
     "Evolução das solicitações"
@@ -366,15 +413,22 @@ st.caption(
 )
 
 
+# ----------------------------------------
+# MAIOR DEMANDA
+# ----------------------------------------
+
 if tema_selecionado == "Todos":
     chart_title = (
         "Temas com maior demanda"
     )
+
     category_column = "tema"
+
 else:
     chart_title = (
         "Serviços com maior demanda"
     )
+
     category_column = "servico"
 
 
@@ -446,9 +500,14 @@ st.plotly_chart(
 )
 
 
+# ----------------------------------------
+# RANKING
+# ----------------------------------------
+
 st.subheader(
     "Pontos que merecem investigação"
 )
+
 
 st.caption(
     "Combinações distrito + serviço ordenadas "
@@ -457,23 +516,27 @@ st.caption(
 
 
 if ranking.empty:
+
     st.info(
         "Nenhum sinal encontrado com "
         "os filtros atuais."
     )
 
 else:
+
     ranking_display = (
         ranking
         .head(15)
         .copy()
     )
 
+
     ranking_display[
         "Variação"
     ] = ranking_display[
         "variacao_percentual"
     ]
+
 
     ranking_display[
         "Pendência"
@@ -484,11 +547,13 @@ else:
         * 100
     )
 
+
     ranking_display[
         "Tempo médio"
     ] = ranking_display[
         "tempo_medio_dias"
     ]
+
 
     ranking_display[
         "Atípico"
@@ -499,6 +564,7 @@ else:
         "Sim",
         "Não",
     )
+
 
     ranking_display = (
         ranking_display[
@@ -518,20 +584,53 @@ else:
             columns={
                 "distrito":
                 "Distrito",
+
                 "tema":
                 "Tema",
+
                 "servico":
                 "Serviço",
+
                 "solicitacoes":
                 "Solicitações",
+
                 "indice_atencao":
                 "Índice",
             }
         )
     )
 
+
     st.dataframe(
         ranking_display,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
+        column_config={
+            "Solicitações":
+            st.column_config.NumberColumn(
+                format="%d",
+            ),
+
+            "Variação":
+            st.column_config.NumberColumn(
+                format="%.1f%%",
+            ),
+
+            "Pendência":
+            st.column_config.NumberColumn(
+                format="%.1f%%",
+            ),
+
+            "Tempo médio":
+            st.column_config.NumberColumn(
+                format="%.1f dias",
+            ),
+
+            "Índice":
+            st.column_config.ProgressColumn(
+                min_value=0,
+                max_value=100,
+                format="%.1f",
+            ),
+        },
     )
