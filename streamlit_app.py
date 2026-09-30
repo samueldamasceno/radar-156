@@ -38,28 +38,19 @@ def format_integer(value):
 def format_percent(value):
     if pd.isna(value):
         return "N/D"
-    return (
-        f"{value * 100:.1f}%"
-        .replace(".", ",")
-    )
+    return f"{value * 100:.1f}%".replace(".", ",")
 
 
 def format_change(value):
     if pd.isna(value):
         return "Sem baseline"
-    return (
-        f"{value:+.1f}%"
-        .replace(".", ",")
-    )
+    return f"{value:+.1f}%".replace(".", ",")
 
 
 def format_days(value):
     if pd.isna(value):
         return "N/D"
-    return (
-        f"{value:.1f} dias"
-        .replace(".", ",")
-    )
+    return f"{value:.1f} dias".replace(".", ",")
 
 
 if not DATA_FILE.exists():
@@ -117,7 +108,6 @@ if tema_selecionado != "Todos":
         == tema_selecionado
     ]
 
-
 distritos = sorted(
     filtered.loc[
         filtered["distrito_valido"],
@@ -138,7 +128,6 @@ if distrito_selecionado != "Todos":
         == distrito_selecionado
     ]
 
-
 semanas = sorted(
     pd.to_datetime(
         filtered["semana"]
@@ -153,12 +142,10 @@ if not semanas:
     )
     st.stop()
 
-
 if len(semanas) >= 2:
     default_week_index = len(semanas) - 2
 else:
     default_week_index = 0
-
 
 semana_selecionada = st.selectbox(
     "Semana de referência",
@@ -169,7 +156,6 @@ semana_selecionada = st.selectbox(
         .strftime("%d/%m/%Y")
     ),
 )
-
 
 volume_minimo = st.slider(
     "Volume mínimo por sinal",
@@ -222,7 +208,6 @@ if pagina == "Visão geral":
     total = int(
         current["solicitacoes"].sum()
     )
-
     pendentes = int(
         current["pendentes"].sum()
     )
@@ -265,26 +250,22 @@ if pagina == "Visão geral":
         "Solicitações",
         format_integer(total),
     )
-
     col2.metric(
         "Pendentes",
         format_percent(
             taxa_pendente_geral
         ),
     )
-
     col3.metric(
         "Cobertura territorial",
         format_percent(cobertura),
     )
-
     col4.metric(
         "Atenção elevada",
         format_integer(
             sinais_elevados
         ),
     )
-
     col5.metric(
         "Sinais atípicos",
         format_integer(anomalias),
@@ -429,9 +410,7 @@ if pagina == "Visão geral":
         )
 
     else:
-        ranking_display = (
-            ranking.head(15).copy()
-        )
+        ranking_display = ranking.head(15).copy()
 
         ranking_display[
             "Variação"
@@ -457,9 +436,7 @@ if pagina == "Visão geral":
         ranking_display[
             "Atípico"
         ] = np.where(
-            ranking_display[
-                "anomalia"
-            ],
+            ranking_display["anomalia"],
             "Sim",
             "Não",
         )
@@ -480,16 +457,11 @@ if pagina == "Visão geral":
             ]
             .rename(
                 columns={
-                    "distrito":
-                    "Distrito",
-                    "tema":
-                    "Tema",
-                    "servico":
-                    "Serviço",
-                    "solicitacoes":
-                    "Solicitações",
-                    "indice_atencao":
-                    "Índice",
+                    "distrito": "Distrito",
+                    "tema": "Tema",
+                    "servico": "Serviço",
+                    "solicitacoes": "Solicitações",
+                    "indice_atencao": "Índice",
                 }
             )
         )
@@ -542,15 +514,57 @@ elif pagina == "Radar de atenção":
     )
 
     if ranking.empty:
+
         st.info(
             "Não existem sinais disponíveis "
             "para esses filtros."
         )
 
     else:
-        st.write(
-            "Sinais disponíveis:",
-            len(ranking),
+
+        plot_df = ranking.copy()
+
+        plot_df[
+            "pendencia_percentual"
+        ] = (
+            plot_df[
+                "taxa_pendente"
+            ]
+            * 100
+        )
+
+        fig_radar = px.scatter(
+            plot_df,
+            x="variacao_percentual",
+            y="pendencia_percentual",
+            size="solicitacoes",
+            size_max=34,
+            hover_name="servico",
+            hover_data={
+                "distrito": True,
+                "tema": True,
+                "solicitacoes": True,
+                "indice_atencao": ":.1f",
+                "variacao_percentual": ":.1f",
+                "pendencia_percentual": ":.1f",
+            },
+            labels={
+                "variacao_percentual":
+                "Variação da demanda (%)",
+                "pendencia_percentual":
+                "Solicitações pendentes (%)",
+                "distrito":
+                "Distrito",
+                "tema":
+                "Tema",
+                "solicitacoes":
+                "Solicitações",
+            },
+        )
+
+        st.plotly_chart(
+            fig_radar,
+            use_container_width=True,
         )
 
 
