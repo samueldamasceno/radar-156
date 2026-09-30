@@ -342,8 +342,78 @@ def process_file(path: Path):
             "tempo_dias",
         ] = np.nan
 
+        # ---------------------------------
+        # SEMANA
+        # ---------------------------------
+
+        # A semana passa a ser identificada
+        # pela segunda-feira correspondente.
+
+        df["semana"] = (
+            df["data_abertura"]
+            - pd.to_timedelta(
+                df[
+                    "data_abertura"
+                ].dt.weekday,
+                unit="D",
+            )
+        ).dt.normalize()
+
+        # ---------------------------------
+        # AGREGAÇÃO
+        # ---------------------------------
+
+        df["linha"] = 1
+
+        group_columns = [
+            "semana",
+            "tema",
+            "servico",
+            "distrito",
+        ]
+
+        grouped = (
+            df.groupby(
+                group_columns,
+                dropna=False,
+                observed=True,
+            )
+            .agg(
+                solicitacoes=(
+                    "linha",
+                    "sum",
+                ),
+
+                pendentes=(
+                    "pendente",
+                    "sum",
+                ),
+
+                finalizadas=(
+                    "finalizada",
+                    "sum",
+                ),
+
+                canceladas=(
+                    "cancelada",
+                    "sum",
+                ),
+
+                tempo_total=(
+                    "tempo_dias",
+                    "sum",
+                ),
+
+                tempo_n=(
+                    "tempo_dias",
+                    "count",
+                ),
+            )
+            .reset_index()
+        )
+
         partial_results.append(
-            df
+            grouped
         )
 
     return pd.concat(
