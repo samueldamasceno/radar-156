@@ -224,6 +224,33 @@ def process_file(path: Path):
             )
         )
 
+        # ---------------------------------
+        # DATAS
+        # ---------------------------------
+
+        df["data_abertura"] = (
+            pd.to_datetime(
+                df["data_abertura"],
+                errors="coerce",
+                dayfirst=True,
+            )
+        )
+
+        df["data_finalizacao"] = (
+            pd.to_datetime(
+                df["data_finalizacao"],
+                errors="coerce",
+                dayfirst=True,
+            )
+        )
+
+        # Remove registros sem
+        # data de abertura válida.
+        df = df[
+            df["data_abertura"]
+            .notna()
+        ].copy()
+
         partial_results.append(
             df
         )
