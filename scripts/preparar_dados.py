@@ -442,7 +442,6 @@ df["taxa_pendente"] = (
     )
 )
 
-
 df["taxa_finalizacao"] = (
     df["finalizadas"]
     / df[
@@ -452,7 +451,6 @@ df["taxa_finalizacao"] = (
         np.nan,
     )
 )
-
 
 df["taxa_cancelamento"] = (
     df["canceladas"]
@@ -464,7 +462,6 @@ df["taxa_cancelamento"] = (
     )
 )
 
-
 df["tempo_medio_dias"] = (
     df["tempo_total"]
     / df[
@@ -472,5 +469,164 @@ df["tempo_medio_dias"] = (
     ].replace(
         0,
         np.nan,
+    )
+)
+
+
+# ============================================================
+# ORDENAÇÃO TEMPORAL
+# ============================================================
+
+df = df.sort_values(
+    [
+        "tema",
+        "distrito",
+        "servico",
+        "semana",
+    ]
+).reset_index(
+    drop=True
+)
+
+
+# ============================================================
+# BASELINE HISTÓRICA
+# ============================================================
+
+group_keys = [
+    "tema",
+    "distrito",
+    "servico",
+]
+
+
+# Média das quatro observações
+# anteriores disponíveis para
+# a mesma combinação.
+df["volume_baseline"] = (
+    df.groupby(
+        group_keys
+    )["solicitacoes"]
+    .transform(
+        lambda series:
+        series
+        .shift(1)
+        .rolling(
+            window=4,
+            min_periods=2,
+        )
+        .mean()
+    )
+)
+
+
+# ============================================================
+# VARIAÇÃO DA DEMANDA
+# ============================================================
+
+df["variacao"] = (
+    df["solicitacoes"]
+    / df[
+        "volume_baseline"
+    ].replace(
+        0,
+        np.nan,
+    )
+    - 1
+)
+
+
+df["variacao"] = (
+    df["variacao"]
+    .replace(
+        [
+            np.inf,
+            -np.inf,
+        ],
+        np.nan,
+    )
+)
+
+
+df["variacao_percentual"] = (
+    df["variacao"]
+    * 100
+).round(1)
+
+
+df["crescimento_positivo"] = (
+    df["variacao"]
+    .fillna(0)
+    .clip(
+        lower=0
+    )
+)
+
+
+# ============================================================
+# NORMALIZAÇÃO
+# ============================================================
+
+valid_mask = (
+    df["distrito_valido"]
+)
+
+
+def percentile_score(series):
+    """
+    Calcula percentil somente
+    para registros com distrito
+    territorialmente válido.
+    """
+
+    result = pd.Series(
+        np.nan,
+        index=series.index,
+        dtype=float,
+    )
+
+    values = (
+        series.loc[
+            valid_mask
+        ]
+        .fillna(0)
+    )
+
+    result.loc[
+        valid_mask
+    ] = (
+        values
+        .rank(
+            pct=True
+        )
+        .mul(100)
+    )
+
+    return result
+
+
+df["score_crescimento"] = (
+    percentile_score(
+        df[
+            "crescimento_positivo"
+        ]
+    )
+)
+
+
+df["score_pendencia"] = (
+    percentile_score(
+        df[
+            "taxa_pendente"
+        ]
+    )
+)
+
+
+df["score_tempo"] = (
+    percentile_score(
+        df[
+            "tempo_medio_dias"
+        ]
     )
 )
