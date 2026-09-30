@@ -105,9 +105,44 @@ if distrito_selecionado != "Todos":
     ]
 
 
-st.subheader("Dados processados")
+semanas = sorted(
+    pd.to_datetime(
+        filtered["semana"]
+        .dropna()
+        .unique()
+    )
+)
+
+
+if not semanas:
+    st.warning(
+        "Nenhum dado encontrado para "
+        "os filtros selecionados."
+    )
+
+    st.stop()
+
+
+semana_selecionada = st.selectbox(
+    "Semana de referência",
+    semanas,
+    index=len(semanas) - 1,
+    format_func=lambda date: (
+        pd.Timestamp(date)
+        .strftime("%d/%m/%Y")
+    ),
+)
+
+
+current = filtered[
+    filtered["semana"]
+    == semana_selecionada
+].copy()
+
+
+st.subheader("Dados da semana")
 
 st.dataframe(
-    filtered.head(20),
+    current.head(20),
     use_container_width=True,
 )
