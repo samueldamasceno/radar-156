@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -35,10 +36,6 @@ def load_data():
 
 
 def format_integer(value):
-    """
-    Formata inteiros no padrão brasileiro.
-    """
-
     if pd.isna(value):
         return "N/D"
 
@@ -49,10 +46,6 @@ def format_integer(value):
 
 
 def format_percent(value):
-    """
-    Recebe proporção 0-1.
-    """
-
     if pd.isna(value):
         return "N/D"
 
@@ -63,11 +56,6 @@ def format_percent(value):
 
 
 def format_change(value):
-    """
-    Recebe percentual já em pontos percentuais.
-    Ex: 25.5 significa +25,5%.
-    """
-
     if pd.isna(value):
         return "Sem baseline"
 
@@ -238,7 +226,74 @@ ranking = ranking.sort_values(
 )
 
 
-st.subheader("Sinais encontrados")
+st.subheader(
+    "Situação na semana selecionada"
+)
+
+
+total = int(
+    current["solicitacoes"].sum()
+)
+
+pendentes = int(
+    current["pendentes"].sum()
+)
+
+
+if total > 0:
+    taxa_pendente_geral = (
+        pendentes / total
+    )
+else:
+    taxa_pendente_geral = np.nan
+
+
+sinais_elevados = int(
+    (
+        ranking["indice_atencao"]
+        >= 75
+    ).sum()
+)
+
+
+anomalias = int(
+    ranking["anomalia"].sum()
+)
+
+
+col1, col2, col3, col4 = st.columns(4)
+
+
+col1.metric(
+    "Solicitações",
+    format_integer(total),
+)
+
+col2.metric(
+    "Pendentes",
+    format_percent(
+        taxa_pendente_geral
+    ),
+)
+
+col3.metric(
+    "Atenção elevada",
+    format_integer(
+        sinais_elevados
+    ),
+)
+
+col4.metric(
+    "Sinais atípicos",
+    format_integer(
+        anomalias
+    ),
+)
+
+
+st.subheader(
+    "Pontos que merecem investigação"
+)
 
 st.dataframe(
     ranking.head(20),
