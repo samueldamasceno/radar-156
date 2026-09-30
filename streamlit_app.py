@@ -9,6 +9,14 @@ DATA_FILE = Path(
 )
 
 
+st.set_page_config(
+    page_title="Radar 156",
+    page_icon=None,
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+
 @st.cache_data
 def load_data():
     """
