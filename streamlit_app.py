@@ -2,6 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 
 
@@ -254,8 +255,7 @@ territorial_volume = int(
 
 if total > 0:
     cobertura = (
-        territorial_volume
-        / total
+        territorial_volume / total
     )
 else:
     cobertura = np.nan
@@ -268,7 +268,6 @@ sinais_elevados = int(
     ).sum()
 )
 
-
 anomalias = int(
     ranking["anomalia"].sum()
 )
@@ -277,7 +276,6 @@ anomalias = int(
 col1, col2, col3, col4, col5 = (
     st.columns(5)
 )
-
 
 col1.metric(
     "Solicitações",
@@ -293,9 +291,7 @@ col2.metric(
 
 col3.metric(
     "Cobertura territorial",
-    format_percent(
-        cobertura
-    ),
+    format_percent(cobertura),
 )
 
 col4.metric(
@@ -307,9 +303,7 @@ col4.metric(
 
 col5.metric(
     "Sinais atípicos",
-    format_integer(
-        anomalias
-    ),
+    format_integer(anomalias),
 )
 
 
@@ -317,6 +311,56 @@ st.caption(
     "Cobertura territorial representa a parcela "
     "das solicitações que possui distrito nominal "
     "identificado."
+)
+
+
+st.subheader(
+    "Evolução das solicitações"
+)
+
+
+weekly = (
+    filtered
+    .groupby(
+        "semana",
+        as_index=False,
+    )
+    .agg(
+        solicitacoes=(
+            "solicitacoes",
+            "sum",
+        ),
+        pendentes=(
+            "pendentes",
+            "sum",
+        ),
+    )
+)
+
+
+fig_weekly = px.line(
+    weekly,
+    x="semana",
+    y="solicitacoes",
+    markers=True,
+    labels={
+        "semana": "",
+        "solicitacoes":
+        "Solicitações",
+    },
+)
+
+
+st.plotly_chart(
+    fig_weekly,
+    use_container_width=True,
+)
+
+
+st.caption(
+    "A última semana do período é parcial "
+    "e não deve ser comparada diretamente "
+    "com semanas completas."
 )
 
 
