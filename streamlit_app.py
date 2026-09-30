@@ -39,7 +39,6 @@ if not DATA_FILE.exists():
         "O arquivo radar156.parquet não foi encontrado. "
         "Execute primeiro: python scripts/preparar_dados.py"
     )
-
     st.stop()
 
 
@@ -119,16 +118,13 @@ if not semanas:
         "Nenhum dado encontrado para "
         "os filtros selecionados."
     )
-
     st.stop()
 
 
 # A última semana disponível começa em 29/06 e é parcial.
 # Por isso, a penúltima semana é a referência inicial.
 if len(semanas) >= 2:
-    default_week_index = (
-        len(semanas) - 2
-    )
+    default_week_index = len(semanas) - 2
 else:
     default_week_index = 0
 
@@ -163,15 +159,23 @@ current = filtered[
 ].copy()
 
 
-signals = current[
-    current["solicitacoes"]
-    >= volume_minimo
+territorial_current = current[
+    current["distrito_valido"]
 ].copy()
 
 
-st.subheader("Dados da semana")
+ranking = territorial_current[
+    (
+        territorial_current["solicitacoes"]
+        >= volume_minimo
+    )
+    & territorial_current["indice_atencao"].notna()
+].copy()
+
+
+st.subheader("Sinais encontrados")
 
 st.dataframe(
-    signals.head(20),
+    ranking.head(20),
     use_container_width=True,
 )
