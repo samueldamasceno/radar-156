@@ -120,8 +120,6 @@ def clean_district(series):
         .replace("", pd.NA)
     )
 
-    # Identifica valores compostos
-    # somente por números.
     numeric_mask = (
         series
         .str.fullmatch(
@@ -130,8 +128,6 @@ def clean_district(series):
         )
     )
 
-    # Códigos numéricos são transformados
-    # em valores não identificados.
     series = series.mask(
         numeric_mask,
         pd.NA,
@@ -189,10 +185,6 @@ def process_file(path: Path):
             f"{chunk_number}"
         )
 
-        # ---------------------------------
-        # CONFERE COLUNAS
-        # ---------------------------------
-
         missing_columns = [
             column
             for column
@@ -209,10 +201,6 @@ def process_file(path: Path):
                 )
             )
 
-        # ---------------------------------
-        # SELEÇÃO E RENOMEAÇÃO
-        # ---------------------------------
-
         df = (
             chunk[
                 list(
@@ -224,10 +212,6 @@ def process_file(path: Path):
                 columns=COLUMN_MAP
             )
         )
-
-        # ---------------------------------
-        # DATAS
-        # ---------------------------------
 
         df["data_abertura"] = (
             pd.to_datetime(
@@ -245,16 +229,10 @@ def process_file(path: Path):
             )
         )
 
-        # Remove registros sem
-        # data de abertura válida.
         df = df[
             df["data_abertura"]
             .notna()
         ].copy()
-
-        # ---------------------------------
-        # CAMPOS DE TEXTO
-        # ---------------------------------
 
         df["tema"] = clean_text(
             df["tema"]
@@ -274,18 +252,10 @@ def process_file(path: Path):
             )
         )
 
-        # ---------------------------------
-        # DISTRITO VÁLIDO
-        # ---------------------------------
-
         df["distrito_valido"] = (
             df["distrito"]
             .ne("Não informado")
         )
-
-        # ---------------------------------
-        # STATUS
-        # ---------------------------------
 
         status_upper = (
             df["status"]
@@ -312,10 +282,6 @@ def process_file(path: Path):
             .eq("CANCELADA")
         ).astype("int8")
 
-        # ---------------------------------
-        # TEMPO DE ATENDIMENTO
-        # ---------------------------------
-
         df["tempo_dias"] = (
             (
                 df["data_finalizacao"]
@@ -326,9 +292,6 @@ def process_file(path: Path):
             / 86400
         )
 
-        # Só consideramos tempo
-        # de atendimento de solicitações
-        # efetivamente finalizadas.
         df.loc[
             status_upper.ne(
                 "FINALIZADA"
@@ -336,18 +299,10 @@ def process_file(path: Path):
             "tempo_dias",
         ] = np.nan
 
-        # Remove tempos impossíveis.
         df.loc[
             df["tempo_dias"] < 0,
             "tempo_dias",
         ] = np.nan
-
-        # ---------------------------------
-        # SEMANA
-        # ---------------------------------
-
-        # A semana passa a ser identificada
-        # pela segunda-feira correspondente.
 
         df["semana"] = (
             df["data_abertura"]
@@ -358,10 +313,6 @@ def process_file(path: Path):
                 unit="D",
             )
         ).dt.normalize()
-
-        # ---------------------------------
-        # AGREGAÇÃO
-        # ---------------------------------
 
         df["linha"] = 1
 
@@ -420,3 +371,94 @@ def process_file(path: Path):
         partial_results,
         ignore_index=True,
     )
+
+
+# ============================================================
+# LOCALIZA OS CSVs
+# ============================================================
+
+files = sorted(
+    RAW_DIR.glob(
+        "sp156_2026_q*.csv"
+    )
+)
+
+if not files:
+
+    raise FileNotFoundError(
+        "Nenhum arquivo "
+        "sp156_2026_q*.csv "
+        "foi encontrado em "
+        "data/raw/"
+    )
+
+
+# ============================================================
+# PROCESSA TODOS OS ARQUIVOS
+# ============================================================
+
+results = []
+
+for file in files:
+
+    results.append(
+        process_file(file)
+    )
+
+
+df = pd.concat(
+    results,
+    ignore_index=True,
+)
+
+
+# ============================================================
+# CONSOLIDA OS CHUNKS
+# ============================================================
+
+GROUP_COLUMNS = [
+    "semana",
+    "tema",
+    "servico",
+    "distrito",
+]
+
+
+df = (
+    df.groupby(
+        GROUP_COLUMNS,
+        observed=True,
+        as_index=False,
+    )
+    .agg(
+        solicitacoes=(
+            "solicitacoes",
+            "sum",
+        ),
+
+        pendentes=(
+            "pendentes",
+            "sum",
+        ),
+
+        finalizadas=(
+            "finalizadas",
+            "sum",
+        ),
+
+        canceladas=(
+            "canceladas",
+            "sum",
+        ),
+
+        tempo_total=(
+            "tempo_total",
+            "sum",
+        ),
+
+        tempo_n=(
+            "tempo_n",
+            "sum",
+        ),
+    )
+)
