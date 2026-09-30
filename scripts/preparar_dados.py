@@ -3,6 +3,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
+
 
 # ============================================================
 # CONFIGURAÇÕES
@@ -752,6 +755,125 @@ df.loc[
     ~valid_mask,
     "indice_atencao",
 ] = np.nan
+
+
+# ============================================================
+# DETECÇÃO DE ANOMALIAS
+# ============================================================
+
+# O modelo também é treinado somente
+# com observações territorialmente
+# identificáveis.
+
+model_data = pd.DataFrame(
+    {
+        "volume":
+        np.log1p(
+            df.loc[
+                valid_mask,
+                "solicitacoes",
+            ]
+        ),
+
+        "crescimento":
+        df.loc[
+            valid_mask,
+            "crescimento_positivo",
+        ].clip(
+            upper=5
+        ),
+
+        "pendencia":
+        df.loc[
+            valid_mask,
+            "taxa_pendente",
+        ].fillna(0),
+
+        "tempo":
+        np.log1p(
+            df.loc[
+                valid_mask,
+                "tempo_medio_dias",
+            ].fillna(0)
+        ),
+    }
+)
+
+
+scaler = StandardScaler()
+
+
+X = scaler.fit_transform(
+    model_data
+)
+
+
+model = IsolationForest(
+    n_estimators=200,
+
+    # O MVP define 3% das observações
+    # como o conjunto de maior atipicidade.
+    contamination=0.03,
+
+    random_state=42,
+)
+
+
+predictions = (
+    model.fit_predict(X)
+)
+
+
+# Inicializa como falso para
+# todo o dataset.
+df["anomalia"] = False
+
+
+df.loc[
+    valid_mask,
+    "anomalia",
+] = (
+    predictions == -1
+)
+
+
+# ============================================================
+# SCORE DE ANOMALIA
+# ============================================================
+
+raw_anomaly_score = (
+    -model.decision_function(
+        X
+    )
+)
+
+
+ranked_anomaly_score = (
+    pd.Series(
+        raw_anomaly_score,
+        index=df.index[
+            valid_mask
+        ],
+    )
+    .rank(
+        pct=True
+    )
+    .mul(100)
+    .round(1)
+)
+
+
+df["score_anomalia"] = (
+    np.nan
+)
+
+
+df.loc[
+    valid_mask,
+    "score_anomalia",
+] = (
+    ranked_anomaly_score
+)
 
 
 # ============================================================
