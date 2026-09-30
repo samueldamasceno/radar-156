@@ -2,7 +2,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
@@ -802,7 +801,6 @@ model_data = pd.DataFrame(
 
 scaler = StandardScaler()
 
-
 X = scaler.fit_transform(
     model_data
 )
@@ -901,4 +899,170 @@ df["faixa_atencao"] = (
     .apply(
         faixa_atencao
     )
+)
+
+
+# ============================================================
+# DATASET FINAL
+# ============================================================
+
+columns_to_save = [
+    "semana",
+    "tema",
+    "servico",
+    "distrito",
+    "distrito_valido",
+    "solicitacoes",
+    "pendentes",
+    "finalizadas",
+    "canceladas",
+    "taxa_pendente",
+    "taxa_finalizacao",
+    "taxa_cancelamento",
+    "tempo_medio_dias",
+    "volume_baseline",
+    "variacao_percentual",
+    "score_crescimento",
+    "score_pendencia",
+    "score_tempo",
+    "indice_atencao",
+    "faixa_atencao",
+    "anomalia",
+    "score_anomalia",
+]
+
+
+final_df = (
+    df[
+        columns_to_save
+    ]
+    .copy()
+)
+
+
+# ============================================================
+# SALVA PARQUET
+# ============================================================
+
+final_df.to_parquet(
+    OUTPUT_FILE,
+    index=False,
+)
+
+
+# ============================================================
+# RESUMO DA EXECUÇÃO
+# ============================================================
+
+total_solicitacoes = int(
+    final_df[
+        "solicitacoes"
+    ].sum()
+)
+
+
+solicitacoes_territoriais = int(
+    final_df.loc[
+        final_df[
+            "distrito_valido"
+        ],
+        "solicitacoes",
+    ].sum()
+)
+
+
+cobertura_territorial = (
+    solicitacoes_territoriais
+    / total_solicitacoes
+    * 100
+)
+
+
+distritos_validos = (
+    final_df.loc[
+        final_df[
+            "distrito_valido"
+        ],
+        "distrito",
+    ]
+    .nunique()
+)
+
+
+anomalias = int(
+    final_df[
+        "anomalia"
+    ].sum()
+)
+
+
+print()
+print("=" * 80)
+
+print(
+    "PROCESSAMENTO CONCLUÍDO"
+)
+
+print("=" * 80)
+
+print(
+    f"Solicitações processadas: "
+    f"{total_solicitacoes:,}"
+)
+
+print(
+    f"Solicitações com distrito válido: "
+    f"{solicitacoes_territoriais:,}"
+)
+
+print(
+    f"Cobertura territorial: "
+    f"{cobertura_territorial:.1f}%"
+)
+
+print(
+    f"Linhas analíticas: "
+    f"{len(final_df):,}"
+)
+
+print(
+    f"Distritos válidos: "
+    f"{distritos_validos:,}"
+)
+
+print(
+    f"Temas: "
+    f"{final_df['tema'].nunique():,}"
+)
+
+print(
+    f"Serviços: "
+    f"{final_df['servico'].nunique():,}"
+)
+
+print(
+    f"Semanas: "
+    f"{final_df['semana'].nunique():,}"
+)
+
+print(
+    f"Anomalias territoriais: "
+    f"{anomalias:,}"
+)
+
+print()
+
+print(
+    f"Arquivo salvo em: "
+    f"{OUTPUT_FILE}"
+)
+
+print()
+
+print(
+    "Primeiras linhas:"
+)
+
+print(
+    final_df.head()
 )
