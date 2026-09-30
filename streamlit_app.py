@@ -364,6 +364,65 @@ st.caption(
 )
 
 
+if tema_selecionado == "Todos":
+    chart_title = (
+        "Temas com maior demanda"
+    )
+    category_column = "tema"
+else:
+    chart_title = (
+        "Serviços com maior demanda"
+    )
+    category_column = "servico"
+
+
+st.subheader(
+    chart_title
+)
+
+
+top_categories = (
+    current
+    .groupby(
+        category_column,
+        as_index=False,
+    )
+    .agg(
+        solicitacoes=(
+            "solicitacoes",
+            "sum",
+        )
+    )
+    .nlargest(
+        8,
+        "solicitacoes",
+    )
+    .sort_values(
+        "solicitacoes",
+        ascending=True,
+    )
+)
+
+
+fig_categories = px.bar(
+    top_categories,
+    x="solicitacoes",
+    y=category_column,
+    orientation="h",
+    labels={
+        "solicitacoes":
+        "Solicitações",
+        category_column: "",
+    },
+)
+
+
+st.plotly_chart(
+    fig_categories,
+    use_container_width=True,
+)
+
+
 st.subheader(
     "Pontos que merecem investigação"
 )
