@@ -251,6 +251,37 @@ def process_file(path: Path):
             .notna()
         ].copy()
 
+        # ---------------------------------
+        # CAMPOS DE TEXTO
+        # ---------------------------------
+
+        df["tema"] = clean_text(
+            df["tema"]
+        )
+
+        df["servico"] = clean_text(
+            df["servico"]
+        )
+
+        df["status"] = clean_text(
+            df["status"]
+        )
+
+        df["distrito"] = (
+            clean_district(
+                df["distrito"]
+            )
+        )
+
+        # ---------------------------------
+        # DISTRITO VÁLIDO
+        # ---------------------------------
+
+        df["distrito_valido"] = (
+            df["distrito"]
+            .ne("Não informado")
+        )
+
         partial_results.append(
             df
         )
