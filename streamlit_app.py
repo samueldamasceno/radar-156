@@ -611,6 +611,54 @@ elif pagina == "Radar de atenção":
         )
 
 
+        st.subheader(
+            "Maiores índices de atenção"
+        )
+
+        top_radar = (
+            ranking
+            .head(10)
+            .sort_values(
+                "indice_atencao",
+                ascending=True,
+            )
+        )
+
+        top_radar[
+            "identificacao"
+        ] = (
+            top_radar[
+                "distrito"
+            ]
+            + " · "
+            + top_radar[
+                "servico"
+            ]
+        )
+
+        fig_top = px.bar(
+            top_radar,
+            x="indice_atencao",
+            y="identificacao",
+            orientation="h",
+            labels={
+                "indice_atencao":
+                "Índice de Atenção",
+                "identificacao":
+                "",
+            },
+        )
+
+        fig_top.update_xaxes(
+            range=[0, 100]
+        )
+
+        st.plotly_chart(
+            fig_top,
+            use_container_width=True,
+        )
+
+
 elif pagina == "Investigar sinal":
     st.info(
         "Investigação individual em desenvolvimento."
