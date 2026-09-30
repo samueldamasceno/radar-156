@@ -123,10 +123,20 @@ if not semanas:
     st.stop()
 
 
+# A última semana disponível começa em 29/06 e é parcial.
+# Por isso, a penúltima semana é a referência inicial.
+if len(semanas) >= 2:
+    default_week_index = (
+        len(semanas) - 2
+    )
+else:
+    default_week_index = 0
+
+
 semana_selecionada = st.selectbox(
     "Semana de referência",
     semanas,
-    index=len(semanas) - 1,
+    index=default_week_index,
     format_func=lambda date: (
         pd.Timestamp(date)
         .strftime("%d/%m/%Y")
