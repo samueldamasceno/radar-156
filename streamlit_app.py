@@ -450,7 +450,88 @@ st.subheader(
     "Pontos que merecem investigação"
 )
 
-st.dataframe(
-    ranking.head(20),
-    use_container_width=True,
+st.caption(
+    "Combinações distrito + serviço ordenadas "
+    "pelo Índice de Atenção."
 )
+
+
+if ranking.empty:
+    st.info(
+        "Nenhum sinal encontrado com "
+        "os filtros atuais."
+    )
+
+else:
+    ranking_display = (
+        ranking
+        .head(15)
+        .copy()
+    )
+
+    ranking_display[
+        "Variação"
+    ] = ranking_display[
+        "variacao_percentual"
+    ]
+
+    ranking_display[
+        "Pendência"
+    ] = (
+        ranking_display[
+            "taxa_pendente"
+        ]
+        * 100
+    )
+
+    ranking_display[
+        "Tempo médio"
+    ] = ranking_display[
+        "tempo_medio_dias"
+    ]
+
+    ranking_display[
+        "Atípico"
+    ] = np.where(
+        ranking_display[
+            "anomalia"
+        ],
+        "Sim",
+        "Não",
+    )
+
+    ranking_display = (
+        ranking_display[
+            [
+                "distrito",
+                "tema",
+                "servico",
+                "solicitacoes",
+                "Variação",
+                "Pendência",
+                "Tempo médio",
+                "indice_atencao",
+                "Atípico",
+            ]
+        ]
+        .rename(
+            columns={
+                "distrito":
+                "Distrito",
+                "tema":
+                "Tema",
+                "servico":
+                "Serviço",
+                "solicitacoes":
+                "Solicitações",
+                "indice_atencao":
+                "Índice",
+            }
+        )
+    )
+
+    st.dataframe(
+        ranking_display,
+        use_container_width=True,
+        hide_index=True,
+    )
