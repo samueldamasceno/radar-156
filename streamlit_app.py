@@ -218,7 +218,9 @@ if pagina == "Visão geral":
         ).sum()
     )
 
-    anomalias = int(ranking["anomalia"].sum())
+    anomalias = int(
+        ranking["anomalia"].sum()
+    )
 
     cols = st.columns(5)
 
@@ -226,22 +228,18 @@ if pagina == "Visão geral":
         "Solicitações",
         format_integer(total),
     )
-
     cols[1].metric(
         "Pendentes",
         format_percent(taxa_pendente_geral),
     )
-
     cols[2].metric(
         "Cobertura territorial",
         format_percent(cobertura),
     )
-
     cols[3].metric(
         "Atenção elevada",
         format_integer(sinais_elevados),
     )
-
     cols[4].metric(
         "Sinais atípicos",
         format_integer(anomalias),
@@ -256,10 +254,8 @@ if pagina == "Visão geral":
     st.subheader("Evolução das solicitações")
 
     weekly = (
-        filtered.groupby(
-            "semana",
-            as_index=False,
-        )
+        filtered
+        .groupby("semana", as_index=False)
         .agg(
             solicitacoes=("solicitacoes", "sum"),
             pendentes=("pendentes", "sum"),
@@ -731,12 +727,6 @@ elif pagina == "Investigar sinal":
         y="Componente",
         orientation="h",
         text="Peso",
-        labels={
-            "Score":
-            "Posição relativa no período",
-            "Componente":
-            "",
-        },
     )
 
     fig_components.update_xaxes(
@@ -884,4 +874,20 @@ elif pagina == "Metodologia":
         com especialistas e gestores em uma evolução da
         solução.
         """
+    )
+
+    st.subheader(
+        "Detecção de anomalias"
+    )
+
+    st.markdown(
+        "O Radar utiliza **Isolation Forest**, um algoritmo "
+        "de aprendizado não supervisionado. Nesta versão, "
+        "o parâmetro `contamination=0.03` define "
+        "aproximadamente 3% das observações territoriais "
+        "como o conjunto de maior atipicidade. Portanto, "
+        "a classificação de anomalia não significa "
+        "automaticamente que existe um problema grave. "
+        "Ela indica apenas um padrão estatístico menos "
+        "comum em relação ao conjunto analisado."
     )
