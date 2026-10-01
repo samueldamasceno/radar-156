@@ -1,11 +1,9 @@
 from pathlib import Path
 import textwrap
-
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-
 import streamlit as st
 
 # ============================================================
@@ -15,10 +13,6 @@ import streamlit as st
 DATA_FILE = Path(
     "data/processed/radar156.parquet"
 )
-
-DATA_FILE = Path("data/processed/radar156.parquet")
-
-
 st.set_page_config(
     page_title="Radar 156",
     page_icon=None,
@@ -51,118 +45,64 @@ st.markdown(
         --shadow-md: 5px 5px 0 #050506;
         --shadow-lg: 8px 8px 0 #050506;
     }
-
-    html,
-    body,
-    [class*="css"] {
-        font-family:
-            Inter,
-            ui-sans-serif,
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            sans-serif;
+    html, body, [class*="css"] {
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
+                     "Segoe UI", sans-serif;
     }
-
     .stApp {
         color: var(--radar-text);
         background:
-            linear-gradient(
-                rgba(255,255,255,.018) 1px,
-                transparent 1px
-            ),
-            linear-gradient(
-                90deg,
-                rgba(255,255,255,.018) 1px,
-                transparent 1px
-            ),
-            radial-gradient(
-                circle at 78% -10%,
-                rgba(255,92,53,.14),
-                transparent 30rem
-            ),
-            radial-gradient(
-                circle at 8% 8%,
-                rgba(77,55,255,.10),
-                transparent 28rem
-            ),
+            linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
+            radial-gradient(circle at 78% -10%, rgba(255,92,53,.14), transparent 30rem),
+            radial-gradient(circle at 8% 8%, rgba(77,55,255,.10), transparent 28rem),
             var(--radar-bg);
-
-        background-size:
-            30px 30px,
-            30px 30px,
-            auto,
-            auto,
-            auto;
+        background-size: 30px 30px, 30px 30px, auto, auto, auto;
     }
-
     .block-container {
         max-width: 1520px;
         padding-top: 1.65rem;
         padding-bottom: 5rem;
     }
-
-    #MainMenu,
-    footer {
-        visibility: hidden;
-    }
-
+    #MainMenu, footer { visibility: hidden; }
     [data-testid="stHeader"] {
         background: rgba(11,11,14,.92);
         border-bottom: 1px solid rgba(255,255,255,.06);
         backdrop-filter: blur(10px);
     }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    p,
-    label,
-    .stCaption {
+    h1, h2, h3, h4, p, label, .stCaption {
         color: var(--radar-text);
     }
-
     h1 {
         font-size: clamp(2.9rem, 5vw, 5rem) !important;
         line-height: .9 !important;
-        letter-spacing: -.065em !important;
+        letter-spacing: -0.065em !important;
         font-weight: 900 !important;
     }
-
     h2 {
-        letter-spacing: -.045em !important;
+        letter-spacing: -0.045em !important;
         font-weight: 900 !important;
     }
-
     h3 {
-        letter-spacing: -.035em !important;
+        letter-spacing: -0.035em !important;
         font-weight: 850 !important;
     }
-
+    /* Sidebar */
     [data-testid="stSidebar"] {
         background:
-            radial-gradient(
-                circle at 0% 0%,
-                rgba(255,92,53,.06),
-                transparent 16rem
-            ),
+            radial-gradient(circle at 0% 0%, rgba(255,92,53,.06), transparent 16rem),
             #0D0D11;
-
         border-right: 1px solid #292932;
         box-shadow: none;
     }
-
     [data-testid="stSidebar"] > div:first-child {
         padding: 1.25rem 1rem 1.15rem;
     }
-
     .sidebar-brand {
         margin: .05rem 0 1rem;
         padding: .15rem .15rem 1.15rem;
         border-bottom: 1px solid #2A2A33;
     }
-
     .sidebar-brand-kicker {
         margin-bottom: .55rem;
         color: var(--radar-red);
@@ -171,7 +111,6 @@ st.markdown(
         letter-spacing: .18em;
         text-transform: uppercase;
     }
-
     .sidebar-brand-title {
         margin: 0;
         color: var(--radar-text);
@@ -180,14 +119,12 @@ st.markdown(
         letter-spacing: -.06em;
         line-height: .95;
     }
-
     .sidebar-brand-line {
         width: 42px;
         height: 4px;
         margin: .85rem 0 .75rem;
         background: var(--radar-red);
     }
-
     .sidebar-brand-copy {
         max-width: 230px;
         color: #777781;
@@ -195,13 +132,11 @@ st.markdown(
         font-weight: 650;
         line-height: 1.5;
     }
-
     [data-testid="stSidebar"] [role="radiogroup"] {
         gap: .25rem;
         margin-top: .15rem;
         counter-reset: radar-nav;
     }
-
     [data-testid="stSidebar"] [role="radiogroup"] label {
         position: relative;
         display: flex !important;
@@ -214,9 +149,11 @@ st.markdown(
         color: var(--radar-text) !important;
         box-shadow: none;
         cursor: pointer;
+        transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+    [data-testid="stSidebar"] [role="radiogroup"] label {
         counter-increment: radar-nav;
     }
-
     [data-testid="stSidebar"] [role="radiogroup"] label::before {
         content: "0" counter(radar-nav);
         position: absolute;
@@ -228,7 +165,6 @@ st.markdown(
         font-weight: 900;
         letter-spacing: .08em;
     }
-
     [data-testid="stSidebar"] [role="radiogroup"] label p {
         margin: 0 !important;
         color: #D6D3CC !important;
@@ -236,7 +172,7 @@ st.markdown(
         font-weight: 760 !important;
         letter-spacing: -.015em;
     }
-
+    /* Remove completamente o radio button nativo, inclusive a bolinha azul */
     [data-testid="stSidebar"] [role="radiogroup"] input[type="radio"] {
         position: absolute !important;
         opacity: 0 !important;
@@ -244,68 +180,33 @@ st.markdown(
         width: 0 !important;
         height: 0 !important;
     }
-
-    [data-testid="stSidebar"]
-    [role="radiogroup"]
-    input[type="radio"] + div,
-
-    [data-testid="stSidebar"]
-    [role="radiogroup"]
-    label > div:first-child:has(input[type="radio"]),
-
-    [data-testid="stSidebar"]
-    [role="radiogroup"]
-    [data-baseweb="radio"] > div:first-child {
+    [data-testid="stSidebar"] [role="radiogroup"] input[type="radio"] + div,
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child:has(input[type="radio"]),
+    [data-testid="stSidebar"] [role="radiogroup"] [data-baseweb="radio"] > div:first-child {
         display: none !important;
     }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label {
-    transition:
-        background .16s ease,
-        border-color .16s ease,
-        transform .16s ease;
-    }
-
     [data-testid="stSidebar"] [role="radiogroup"] label:hover {
         transform: translateX(2px);
         background: #17171D;
         border-color: #2C2C35;
     }
-
-    [data-testid="stSidebar"]
-    [role="radiogroup"]
-    label:has(input:checked) {
-        background:
-            linear-gradient(
-                90deg,
-                rgba(255,92,53,.18),
-                rgba(255,92,53,.055)
-            );
-
+    [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
+        background: linear-gradient(90deg, rgba(255,92,53,.18), rgba(255,92,53,.055));
         border-color: rgba(255,92,53,.42);
-        box-shadow:
-            inset 3px 0 0 var(--radar-red);
+        box-shadow: inset 3px 0 0 var(--radar-red);
     }
-
-    [data-testid="stSidebar"]
-    [role="radiogroup"]
-    label:has(input:checked)::before {
+    [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked)::before {
         color: var(--radar-red);
     }
-
-    [data-testid="stSidebar"]
-    [role="radiogroup"]
-    label:has(input:checked) p {
+    [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) p {
         color: #FFF5F1 !important;
         font-weight: 900 !important;
     }
-
     .sidebar-footer {
         margin-top: 2rem;
         padding: 1rem .15rem 0;
         border-top: 1px solid #2A2A33;
     }
-
     .sidebar-footer-label {
         color: #5E5E68;
         font-size: .61rem;
@@ -313,7 +214,6 @@ st.markdown(
         letter-spacing: .14em;
         text-transform: uppercase;
     }
-
     .sidebar-footer-copy {
         margin-top: .35rem;
         color: #85858E;
@@ -321,7 +221,7 @@ st.markdown(
         font-weight: 650;
         line-height: 1.45;
     }
-
+    /* Hero */
     .radar-hero {
         position: relative;
         overflow: hidden;
@@ -330,18 +230,11 @@ st.markdown(
         border: 2px solid #050506;
         border-radius: 0;
         background:
-            linear-gradient(
-                115deg,
-                rgba(255,92,53,.98),
-                rgba(224,61,35,.96)
-            );
+            linear-gradient(115deg, rgba(255,92,53,.98), rgba(224,61,35,.96));
         box-shadow: var(--shadow-lg);
     }
-
     .radar-hero::before {
-        content:
-            "RADAR 156  •  INTELIGÊNCIA OPERACIONAL  •  SP156  •  DADOS PÚBLICOS";
-
+        content: "RADAR 156  •  INTELIGÊNCIA OPERACIONAL  •  SP156  •  DADOS PÚBLICOS";
         display: block;
         position: relative;
         z-index: 2;
@@ -355,7 +248,6 @@ st.markdown(
         white-space: nowrap;
         overflow: hidden;
     }
-
     .radar-hero::after {
         content: "156";
         position: absolute;
@@ -368,30 +260,10 @@ st.markdown(
         font-weight: 950;
         pointer-events: none;
     }
-
     .radar-hero > * {
         margin-left: 2rem;
         margin-right: 2rem;
     }
-
-    .hero-title {
-        color: #09090B;
-        font-size: clamp(3.8rem, 8vw, 7rem);
-        line-height: .85;
-        letter-spacing: -.075em;
-        font-weight: 950;
-        text-transform: uppercase;
-    }
-
-    .hero-subtitle {
-        max-width: 820px;
-        margin-top: 1.4rem;
-        color: rgba(8,8,10,.80);
-        font-size: 1rem;
-        font-weight: 700;
-        line-height: 1.62;
-    }
-
     .hero-kicker {
         position: relative;
         z-index: 1;
@@ -410,7 +282,6 @@ st.markdown(
         text-transform: uppercase;
         box-shadow: var(--shadow-sm);
     }
-
     .hero-dot {
         width: 8px;
         height: 8px;
@@ -418,7 +289,6 @@ st.markdown(
         border-radius: 999px;
         background: var(--radar-sky);
     }
-
     .hero-title {
         position: relative;
         z-index: 1;
@@ -432,12 +302,10 @@ st.markdown(
         font-weight: 950;
         text-transform: uppercase;
     }
-
     .hero-title span {
         color: white;
         text-shadow: 3px 3px 0 #09090B;
     }
-
     .hero-subtitle {
         position: relative;
         z-index: 1;
@@ -449,7 +317,6 @@ st.markdown(
         font-weight: 700;
         line-height: 1.62;
     }
-
     /* Painel de filtros */
     .filter-heading {
         display: flex;
@@ -458,7 +325,6 @@ st.markdown(
         gap: 1rem;
         margin-bottom: .4rem;
     }
-
     .filter-title {
         color: var(--radar-text);
         font-size: .72rem;
@@ -466,13 +332,11 @@ st.markdown(
         letter-spacing: .16em;
         text-transform: uppercase;
     }
-
     .filter-copy {
         color: var(--radar-muted);
         font-size: .8rem;
         font-weight: 620;
     }
-
     .st-key-filter_panel {
         margin: 0 0 2rem;
         padding: 1.05rem 1.15rem .55rem;
@@ -481,7 +345,6 @@ st.markdown(
         background: var(--radar-surface);
         box-shadow: var(--shadow-md);
     }
-
     .st-key-filter_panel::before {
         content: "RECORTE ATIVO";
         display: inline-block;
@@ -494,7 +357,6 @@ st.markdown(
         font-weight: 950;
         letter-spacing: .16em;
     }
-
     .st-key-filter_panel label,
     .st-key-filter_panel [data-testid="stWidgetLabel"] p {
         color: var(--radar-text) !important;
@@ -503,7 +365,6 @@ st.markdown(
         letter-spacing: .06em;
         text-transform: uppercase;
     }
-
     div[data-baseweb="select"] > div,
     div[data-baseweb="input"] > div {
         min-height: 45px;
@@ -514,32 +375,27 @@ st.markdown(
         box-shadow: 2px 2px 0 #050506 !important;
         transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
     }
-
     div[data-baseweb="select"] > div:hover,
     div[data-baseweb="input"] > div:hover {
         background: #1D1D25 !important;
         transform: translate(-1px, -1px);
         box-shadow: 3px 3px 0 #050506 !important;
     }
-
     div[data-baseweb="select"] input,
     div[data-baseweb="select"] span,
     div[data-baseweb="input"] input {
         color: var(--radar-text) !important;
     }
-
     div[data-baseweb="popover"],
     div[data-baseweb="popover"] * {
         color: var(--radar-text) !important;
     }
-
     div[data-baseweb="popover"] ul {
         background: var(--radar-surface-2) !important;
         border: 2px solid #050506 !important;
         border-radius: 0 !important;
         box-shadow: var(--shadow-md) !important;
     }
-
     /* Tooltips e ajuda dos widgets */
     [data-baseweb="tooltip"],
     [data-baseweb="tooltip"] > div,
@@ -552,48 +408,39 @@ st.markdown(
         border-radius: 7px !important;
         box-shadow: 4px 4px 0 #050506 !important;
     }
-
     [data-baseweb="tooltip"] *,
     [role="tooltip"] *,
     [data-testid="stTooltipContent"] * {
         color: var(--radar-text) !important;
         background-color: transparent !important;
     }
-
     div[data-baseweb="popover"] > div:not(ul) {
         color: var(--radar-text) !important;
     }
-
     div[data-baseweb="popover"] [role="tooltip"],
     div[data-baseweb="popover"] [data-baseweb="tooltip"] {
         background: #202028 !important;
     }
-
     /* Slider */
     [data-baseweb="slider"] [role="slider"] {
         background: var(--radar-red) !important;
         border: 2px solid #050506 !important;
         box-shadow: 2px 2px 0 #050506 !important;
     }
-
     [data-baseweb="slider"] div[role="progressbar"] {
         background: var(--radar-red) !important;
     }
-
     [data-testid="stSlider"] [role="slider"] {
         background: var(--radar-red) !important;
         border-color: #050506 !important;
     }
-
     [data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
         background-color: #34343E !important;
     }
-
     [data-testid="stSlider"] div[data-baseweb="slider"] > div > div > div {
         background-color: var(--radar-red) !important;
     }
-
-        /* KPIs */
+    /* KPIs */
     [data-testid="stMetric"] {
         position: relative;
         overflow: hidden;
@@ -604,7 +451,6 @@ st.markdown(
         background: var(--radar-surface);
         box-shadow: var(--shadow-sm);
     }
-
     [data-testid="stMetric"]::before {
         content: "";
         position: absolute;
@@ -615,11 +461,9 @@ st.markdown(
         border-bottom: 2px solid #050506;
         background: var(--radar-red);
     }
-
     [data-testid="stMetric"]:nth-of-type(even)::before {
         background: var(--radar-blue);
     }
-
     [data-testid="stMetricLabel"] {
         margin-top: .3rem;
         color: var(--radar-muted) !important;
@@ -628,19 +472,16 @@ st.markdown(
         letter-spacing: .1em !important;
         text-transform: uppercase;
     }
-
     [data-testid="stMetricValue"] {
         color: var(--radar-text) !important;
         font-size: 1.85rem !important;
         font-weight: 950 !important;
         letter-spacing: -.055em !important;
     }
-
     [data-testid="stMetricDelta"] {
         color: var(--radar-muted) !important;
         font-weight: 750 !important;
     }
-
     /* Cards da metodologia */
     .info-card,
     .method-step {
@@ -652,19 +493,9 @@ st.markdown(
         background: var(--radar-surface);
         box-shadow: var(--shadow-sm);
     }
-
-    .method-step:nth-of-type(3n+1) {
-        background: #201719;
-    }
-
-    .method-step:nth-of-type(3n+2) {
-        background: #171727;
-    }
-
-    .method-step:nth-of-type(3n) {
-        background: #1B1B22;
-    }
-
+    .method-step:nth-of-type(3n+1) { background: #201719; }
+    .method-step:nth-of-type(3n+2) { background: #171727; }
+    .method-step:nth-of-type(3n) { background: #1B1B22; }
     .info-card-title,
     .method-number {
         display: inline-block;
@@ -678,7 +509,6 @@ st.markdown(
         text-transform: uppercase;
         letter-spacing: .14em;
     }
-
     .info-card-value,
     .method-title {
         color: var(--radar-text);
@@ -686,7 +516,6 @@ st.markdown(
         font-weight: 900;
         letter-spacing: -.025em;
     }
-
     .method-description {
         margin-top: .4rem;
         color: var(--radar-muted);
@@ -694,7 +523,6 @@ st.markdown(
         font-weight: 560;
         line-height: 1.52;
     }
-
     /* Dataframe, gráficos e alertas */
     [data-testid="stDataFrame"] {
         overflow: hidden;
@@ -703,7 +531,6 @@ st.markdown(
         background: var(--radar-surface);
         box-shadow: var(--shadow-md);
     }
-
     .js-plotly-plot {
         overflow: hidden;
         border: 2px solid #050506;
@@ -711,42 +538,35 @@ st.markdown(
         background: var(--radar-surface);
         box-shadow: var(--shadow-md);
     }
-
     [data-testid="stAlert"] {
         border: 2px solid #050506 !important;
         border-radius: 0 !important;
         background: #18181F !important;
         box-shadow: var(--shadow-sm);
     }
-
     [data-testid="stAlert"] p {
         color: var(--radar-text) !important;
         font-weight: 650;
     }
-
     [data-testid="stAlert"] svg {
         color: var(--radar-red) !important;
     }
-
     hr {
         border-color: #303039 !important;
         opacity: 1;
     }
-
     .stCaption,
     [data-testid="stCaptionContainer"] p {
         color: var(--radar-muted) !important;
         font-weight: 580;
     }
-
     code {
         border: 1px solid var(--radar-line);
         border-radius: 0;
         background: var(--radar-surface) !important;
         color: var(--radar-sky) !important;
     }
-
-        /* Links e botões nativos */
+    /* Links e botões nativos */
     .stButton > button,
     .stDownloadButton > button {
         border: 2px solid #050506 !important;
@@ -757,7 +577,6 @@ st.markdown(
         box-shadow: var(--shadow-sm) !important;
         transition: transform .15s ease, box-shadow .15s ease, background .15s ease !important;
     }
-
     .stButton > button:hover,
     .stDownloadButton > button:hover {
         transform: translate(-1px, -1px);
@@ -765,66 +584,95 @@ st.markdown(
         color: white !important;
         box-shadow: var(--shadow-md) !important;
     }
-
-    a {
-        color: var(--radar-sky);
-    }
-
-        .method-copy {
+    a { color: var(--radar-sky); }
+    .method-copy {
         max-width: 920px;
         color: var(--text);
     }
-
     .method-copy p {
         margin: 0 0 .72rem;
         line-height: 1.62;
         color: var(--text);
     }
-
-    .method-copy p:last-child {
-        margin-bottom: 0;
+    .method-copy p:last-child { margin-bottom: 0; }
+    /* Responsividade */
+    @media (max-width: 900px) {
+        .block-container { padding-top: 1rem; }
+        .radar-hero { box-shadow: 5px 5px 0 #050506; }
+        .radar-hero > * { margin-left: 1.35rem; margin-right: 1.35rem; }
+        .hero-title { font-size: 3.5rem; }
+        .hero-subtitle { margin-bottom: 1.65rem; }
+        .filter-copy { display: none; }
+        .st-key-filter_panel { box-shadow: 4px 4px 0 #050506; }
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
-# ============================================================
 # FUNÇÕES
+
 # ============================================================
 
 @st.cache_data
+
 def load_data():
-    df = pd.read_parquet(DATA_FILE)
-    df["semana"] = pd.to_datetime(df["semana"])
+    """
+    Carrega o dataset analítico já processado.
+    """
+    df = pd.read_parquet(
+        DATA_FILE
+    )
+    df["semana"] = pd.to_datetime(
+        df["semana"]
+    )
     return df
 
-
 def format_integer(value):
+    """
+    Formata inteiros no padrão brasileiro.
+    """
     if pd.isna(value):
         return "N/D"
-    return f"{int(value):,}".replace(",", ".")
-
+    return (
+        f"{int(value):,}"
+        .replace(",", ".")
+    )
 
 def format_percent(value):
+    """
+    Recebe proporção 0-1.
+    """
     if pd.isna(value):
         return "N/D"
-    return f"{value * 100:.1f}%".replace(".", ",")
-
+    return (
+        f"{value * 100:.1f}%"
+        .replace(".", ",")
+    )
 
 def format_change(value):
+    """
+    Recebe percentual já em pontos percentuais.
+    Ex: 25.5 significa +25,5%.
+    """
     if pd.isna(value):
         return "Sem baseline"
-    return f"{value:+.1f}%".replace(".", ",")
-
+    return (
+        f"{value:+.1f}%"
+        .replace(".", ",")
+    )
 
 def format_days(value):
     if pd.isna(value):
         return "N/D"
-    return f"{value:.1f} dias".replace(".", ",")
-
+    return (
+        f"{value:.1f} dias"
+        .replace(".", ",")
+    )
 
 def standard_layout(fig, height=420):
+    """
+    Padronização visual dos gráficos no tema escuro do Radar 156.
+    """
     fig.update_layout(
         template="plotly_dark",
         height=height,
@@ -853,7 +701,6 @@ def standard_layout(fig, height=420):
             font=dict(color="#D8D3DC"),
         ),
     )
-
     fig.update_xaxes(
         showgrid=False,
         zeroline=False,
@@ -864,7 +711,6 @@ def standard_layout(fig, height=420):
         ticks="outside",
         tickcolor="rgba(244,241,232,.24)",
     )
-
     fig.update_yaxes(
         showgrid=True,
         gridcolor="rgba(244,241,232,.08)",
@@ -876,32 +722,28 @@ def standard_layout(fig, height=420):
         ticks="outside",
         tickcolor="rgba(244,241,232,.24)",
     )
-
     return fig
 
 # ============================================================
 # VERIFICAÇÃO DO DATASET
-# ============================================================
 
+# ============================================================
 if not DATA_FILE.exists():
     st.error(
         "O arquivo radar156.parquet não foi encontrado. "
-        "Execute primeiro: python scripts/preparar_dados.py"
+        "Execute primeiro: python scripts/prepare_data.py"
     )
     st.stop()
-
-
 df = load_data()
 
 # ============================================================
 # SIDEBAR: NAVEGAÇÃO
-# ============================================================
 
+# ============================================================
 st.sidebar.markdown(
     """<div class="sidebar-brand"><div class="sidebar-brand-kicker">SP156 · Dados públicos</div><div class="sidebar-brand-title">RADAR 156</div><div class="sidebar-brand-line"></div><div class="sidebar-brand-copy">Inteligência operacional sobre a demanda municipal.</div></div>""",
     unsafe_allow_html=True,
 )
-
 pagina = st.sidebar.radio(
     "Navegação",
     [
@@ -910,9 +752,8 @@ pagina = st.sidebar.radio(
         "Investigar sinal",
         "Metodologia",
     ],
-    label_visibility="collapsed"
+    label_visibility="collapsed",
 )
-
 st.sidebar.markdown(
     """<div class="sidebar-footer"><div class="sidebar-footer-label">Protótipo analítico</div><div class="sidebar-footer-copy">Prefeitura de São Paulo · 2026</div></div>""",
     unsafe_allow_html=True,
@@ -920,47 +761,41 @@ st.sidebar.markdown(
 
 # ============================================================
 # HEADER
-# ============================================================
 
+# ============================================================
 st.markdown(
     """<section class="radar-hero">
-    <div class="hero-kicker"><span class="hero-dot"></span>Inteligência operacional sobre a demanda municipal</div>
-    <div class="hero-title">Radar <span>156</span></div>
-    <div class="hero-subtitle">Monitoramento de alterações relevantes na demanda por serviços municipais.<br>O radar combina comportamento recente, pendência e tempo de atendimento para destacar sinais que merecem investigação.</div>
-    </section>""",
+<div class="hero-kicker"><span class="hero-dot"></span>Inteligência operacional sobre a demanda municipal</div>
+<div class="hero-title">Radar <span>156</span></div>
+<div class="hero-subtitle">Monitoramento de alterações relevantes na demanda por serviços municipais.<br>O radar combina comportamento recente, pendência e tempo de atendimento para destacar sinais que merecem investigação.</div>
+</section>""",
     unsafe_allow_html=True,
 )
 
 # ============================================================
 # FILTROS EM DESTAQUE
-# ============================================================
 
+# ============================================================
 with st.container(key="filter_panel"):
     st.markdown(
         """<div class="filter-heading"><div class="filter-title">Painel de análise</div><div class="filter-copy">Ajuste o recorte e todo o radar responde aos filtros</div></div>""",
         unsafe_allow_html=True,
     )
-
     filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(
         [1.15, 1.15, 1.0, 1.0],
         gap="medium",
     )
-
     temas = sorted(df["tema"].dropna().unique())
-
     with filter_col1:
         tema_selecionado = st.selectbox(
             "Tema",
             ["Todos"] + temas,
         )
-
     filtered = df.copy()
-
     if tema_selecionado != "Todos":
         filtered = filtered[
             filtered["tema"] == tema_selecionado
         ]
-
     distritos = sorted(
         filtered.loc[
             filtered["distrito_valido"],
@@ -969,36 +804,31 @@ with st.container(key="filter_panel"):
         .dropna()
         .unique()
     )
-
     with filter_col2:
         distrito_selecionado = st.selectbox(
             "Distrito",
             ["Todos"] + distritos,
         )
-
     if distrito_selecionado != "Todos":
         filtered = filtered[
             filtered["distrito"] == distrito_selecionado
         ]
-
     semanas = sorted(
         pd.to_datetime(
             filtered["semana"].dropna().unique()
         )
     )
-
     if not semanas:
         st.warning(
             "Nenhum dado encontrado para os filtros selecionados."
         )
         st.stop()
-
-    # a última semana disponível começa em 29/06, então a referência é a penúltima.
+    # A última semana disponível começa em 29/06 e é parcial.
+    # Por isso, a penúltima semana é a referência inicial.
     if len(semanas) >= 2:
         default_week_index = len(semanas) - 2
     else:
         default_week_index = 0
-
     with filter_col3:
         semana_selecionada = st.selectbox(
             "Semana de referência",
@@ -1006,7 +836,6 @@ with st.container(key="filter_panel"):
             index=default_week_index,
             format_func=lambda date: pd.Timestamp(date).strftime("%d/%m/%Y"),
         )
-
     with filter_col4:
         volume_minimo = st.slider(
             "Volume mínimo por sinal",
@@ -1022,44 +851,38 @@ with st.container(key="filter_panel"):
 
 # ============================================================
 # SEMANA ATUAL E RANKING
+
 # ============================================================
-
 current = filtered[
-    filtered["semana"]
-    == semana_selecionada
+    filtered["semana"] == semana_selecionada
 ].copy()
-
 territorial_current = current[
     current["distrito_valido"]
 ].copy()
-
 ranking = territorial_current[
-    (
-        territorial_current["solicitacoes"]
-        >= volume_minimo
-    )
-    & territorial_current[
-        "indice_atencao"
-    ].notna()
+    (territorial_current["solicitacoes"] >= volume_minimo)
+    & territorial_current["indice_atencao"].notna()
 ].copy()
-
 ranking = ranking.sort_values(
     [
         "indice_atencao",
         "score_anomalia",
         "solicitacoes",
     ],
-    ascending=[
-        False,
-        False,
-        False,
-    ],
+    ascending=[False, False, False],
 )
 
+# ============================================================
+# AVISO SEMANA PARCIAL
 
+# ============================================================
 if (
-    pd.Timestamp(semana_selecionada)
-    == pd.Timestamp("2026-06-29")
+    pd.Timestamp(
+        semana_selecionada
+    )
+    == pd.Timestamp(
+        "2026-06-29"
+    )
 ):
     st.warning(
         "A semana iniciada em 29/06/2026 é parcial: "
@@ -1068,307 +891,203 @@ if (
         "devem ser interpretadas com cautela."
     )
 
+# ============================================================
+# PÁGINA 1
+# VISÃO GERAL
+# ============================================================
 
 if pagina == "Visão geral":
-
     st.subheader(
         "Situação na semana selecionada"
     )
-
+    # ----------------------------------------
+    # KPIs
+    # ----------------------------------------
     total = int(
-        current["solicitacoes"].sum()
+        current[
+            "solicitacoes"
+        ].sum()
     )
-
     pendentes = int(
-        current["pendentes"].sum()
+        current[
+            "pendentes"
+        ].sum()
     )
-
     if total > 0:
         taxa_pendente_geral = (
-            pendentes / total
+            pendentes
+            / total
         )
     else:
         taxa_pendente_geral = np.nan
-
-
     territorial_volume = int(
         current.loc[
-            current["distrito_valido"],
+            current[
+                "distrito_valido"
+            ],
             "solicitacoes",
         ].sum()
     )
-
     if total > 0:
         cobertura = (
-            territorial_volume / total
+            territorial_volume
+            / total
         )
     else:
         cobertura = np.nan
-
-
     sinais_elevados = int(
         (
-            ranking["indice_atencao"]
+            ranking[
+                "indice_atencao"
+            ]
             >= 75
         ).sum()
     )
-
     anomalias = int(
-        ranking["anomalia"].sum()
+        ranking[
+            "anomalia"
+        ].sum()
     )
-
-
     col1, col2, col3, col4, col5 = (
         st.columns(5)
     )
-
     col1.metric(
         "Solicitações",
-        format_integer(total),
+        format_integer(
+            total
+        ),
     )
-
     col2.metric(
         "Pendentes",
         format_percent(
             taxa_pendente_geral
         ),
     )
-
     col3.metric(
         "Cobertura territorial",
-        format_percent(cobertura),
+        format_percent(
+            cobertura
+        ),
     )
-
     col4.metric(
         "Atenção elevada",
         format_integer(
             sinais_elevados
         ),
     )
-
     col5.metric(
         "Sinais atípicos",
-        format_integer(anomalias),
+        format_integer(
+            anomalias
+        ),
     )
-
-
     st.caption(
         "Cobertura territorial representa a parcela "
         "das solicitações que possui distrito nominal "
         "identificado."
     )
 
+    # ----------------------------------------
+    # SÉRIE TEMPORAL
+    # ----------------------------------------
 
-    st.subheader(
-        "Evolução das solicitações"
-    )
-
+    st.subheader("Evolução das solicitações")
     weekly = (
-        filtered
-        .groupby(
-            "semana",
-            as_index=False,
-        )
-        .agg(
-            solicitacoes=(
-                "solicitacoes",
-                "sum",
-            ),
-            pendentes=(
-                "pendentes",
-                "sum",
-            ),
-        )
+        filtered.groupby("semana", as_index=False)
+        .agg(solicitacoes=("solicitacoes", "sum"), pendentes=("pendentes", "sum"))
     )
-
     fig_weekly = px.line(
         weekly,
         x="semana",
         y="solicitacoes",
         markers=True,
-        labels={
-            "semana": "",
-            "solicitacoes":
-            "Solicitações",
-        },
+        labels={"semana": "", "solicitacoes": "Solicitações"},
     )
-
     fig_weekly.update_traces(
-        line=dict(
-            width=3,
-            color="#FF5C35",
-        ),
-        marker=dict(
-            size=7,
-            color="#4D37FF",
-            line=dict(
-                width=1,
-                color="#171717",
-            ),
-        ),
+        line=dict(width=3, color="#FF5C35"),
+        marker=dict(size=7, color="#4D37FF", line=dict(width=1, color="#171717")),
     )
-
-    fig_weekly = standard_layout(
-        fig_weekly,
-        390,
-    )
-
-    fig_weekly.update_layout(
-        showlegend=False
-    )
-
-    st.plotly_chart(
-        fig_weekly,
-        width="stretch",
-    )
-
+    fig_weekly = standard_layout(fig_weekly, 390)
+    fig_weekly.update_layout(showlegend=False)
+    st.plotly_chart(fig_weekly, width="stretch")
     st.caption(
-        "A última semana do período é parcial e "
-        "não deve ser comparada diretamente com "
-        "semanas completas."
+        "A última semana do período é parcial e não deve ser comparada diretamente com semanas completas."
     )
 
+    # ----------------------------------------
+    # MAIOR DEMANDA
+    # ----------------------------------------
 
     if tema_selecionado == "Todos":
-        chart_title = (
-            "Temas com maior demanda"
-        )
+        chart_title = "Temas com maior demanda"
         category_column = "tema"
-
     else:
-        chart_title = (
-            "Serviços com maior demanda"
-        )
+        chart_title = "Serviços com maior demanda"
         category_column = "servico"
-
-
     st.subheader(chart_title)
-
     top_categories = (
-        current
-        .groupby(
-            category_column,
-            as_index=False,
-        )
-        .agg(
-            solicitacoes=(
-                "solicitacoes",
-                "sum",
-            )
-        )
-        .nlargest(
-            8,
-            "solicitacoes",
-        )
-        .sort_values(
-            "solicitacoes",
-            ascending=True,
+        current.groupby(category_column, as_index=False)
+        .agg(solicitacoes=("solicitacoes", "sum"))
+        .nlargest(8, "solicitacoes")
+        .sort_values("solicitacoes", ascending=True)
+    )
+    top_categories["categoria_grafico"] = top_categories[category_column].astype(str).map(
+        lambda value: "<br>".join(
+            textwrap.wrap(str(value), width=52, break_long_words=False, break_on_hyphens=False)
         )
     )
-
-    top_categories[
-        "categoria_grafico"
-    ] = (
-        top_categories[
-            category_column
-        ]
-        .astype(str)
-        .map(
-            lambda value: "<br>".join(
-                textwrap.wrap(
-                    str(value),
-                    width=52,
-                    break_long_words=False,
-                    break_on_hyphens=False,
-                )
-            )
-        )
-    )
-
     fig_categories = px.bar(
         top_categories,
         x="solicitacoes",
         y="categoria_grafico",
         orientation="h",
         hover_name=category_column,
-        labels={
-            "solicitacoes":
-            "Solicitações",
-            "categoria_grafico":
-            "",
-        },
+        labels={"solicitacoes": "Solicitações", "categoria_grafico": ""},
     )
-
-    fig_categories = standard_layout(
-        fig_categories,
-        500,
-    )
-
+    fig_categories = standard_layout(fig_categories, 500)
     fig_categories.update_traces(
         marker_color="#FF5C35",
-        hovertemplate=(
-            "<b>%{hovertext}</b><br>"
-            "Solicitações: %{x}<extra></extra>"
-        ),
+        hovertemplate="<b>%{hovertext}</b><br>Solicitações: %{x}<extra></extra>",
     )
-
     fig_categories.update_yaxes(
         automargin=True,
-        tickfont=dict(
-            size=12,
-            color="#D8D3DC",
-        ),
+        tickfont=dict(size=12, color="#D8D3DC"),
     )
-
-    fig_categories.update_xaxes(
-        automargin=True
-    )
-
+    fig_categories.update_xaxes(automargin=True)
     fig_categories.update_layout(
         showlegend=False,
-        margin=dict(
-            l=12,
-            r=28,
-            t=24,
-            b=42,
-        ),
+        margin=dict(l=12, r=28, t=24, b=42),
         bargap=0.28,
     )
+    st.plotly_chart(fig_categories, width="stretch")
 
-    st.plotly_chart(
-        fig_categories,
-        width="stretch",
-    )
-
+    # ----------------------------------------
+    # RANKING
+    # ----------------------------------------
 
     st.subheader(
         "Pontos que merecem investigação"
     )
-
     st.caption(
         "Combinações distrito + serviço ordenadas "
         "pelo Índice de Atenção."
     )
-
     if ranking.empty:
         st.info(
             "Nenhum sinal encontrado com "
             "os filtros atuais."
         )
-
     else:
         ranking_display = (
             ranking
             .head(15)
             .copy()
         )
-
         ranking_display[
             "Variação"
         ] = ranking_display[
             "variacao_percentual"
         ]
-
         ranking_display[
             "Pendência"
         ] = (
@@ -1377,13 +1096,11 @@ if pagina == "Visão geral":
             ]
             * 100
         )
-
         ranking_display[
             "Tempo médio"
         ] = ranking_display[
             "tempo_medio_dias"
         ]
-
         ranking_display[
             "Atípico"
         ] = np.where(
@@ -1393,7 +1110,6 @@ if pagina == "Visão geral":
             "Sim",
             "Não",
         )
-
         ranking_display = (
             ranking_display[
                 [
@@ -1423,7 +1139,6 @@ if pagina == "Visão geral":
                 }
             )
         )
-
         st.dataframe(
             ranking_display,
             width="stretch",
@@ -1454,32 +1169,32 @@ if pagina == "Visão geral":
             },
         )
 
+# ============================================================
+# PÁGINA 2
+# RADAR
+# ============================================================
 
 elif pagina == "Radar de atenção":
-
     st.subheader(
         "Radar de atenção"
     )
-
     st.markdown(
-        "Cada ponto representa uma combinação entre "
-        "**distrito e serviço** na semana selecionada. "
-        "O eixo horizontal mostra a mudança de demanda "
-        "em relação ao comportamento recente. "
-        "O eixo vertical mostra a proporção de solicitações "
-        "ainda abertas ou em andamento. "
+        "Cada ponto representa uma combinação entre **distrito e serviço** na semana selecionada. "
+        "O eixo horizontal mostra a mudança de demanda em relação ao comportamento recente. "
+        "O eixo vertical mostra a proporção de solicitações ainda abertas ou em andamento. "
         "O tamanho representa o volume de solicitações."
     )
-
     if ranking.empty:
         st.info(
             "Não existem sinais disponíveis "
             "para esses filtros."
         )
-
     else:
-        plot_df = ranking.copy()
-
+        plot_df = (
+            ranking.copy()
+        )
+        # Evita que valores extremos comprimam
+        # completamente o restante do gráfico.
         plot_df[
             "variacao_grafico"
         ] = (
@@ -1492,7 +1207,6 @@ elif pagina == "Radar de atenção":
             )
             .fillna(0)
         )
-
         plot_df[
             "pendencia_percentual"
         ] = (
@@ -1501,7 +1215,6 @@ elif pagina == "Radar de atenção":
             ]
             * 100
         )
-
         fig_radar = px.scatter(
             plot_df,
             x="variacao_grafico",
@@ -1538,37 +1251,31 @@ elif pagina == "Radar de atenção":
                 "Solicitações",
             },
         )
-
         fig_radar.add_vline(
             x=0,
             line_dash="dash",
             line_width=1,
             line_color="rgba(23,23,23,.28)",
         )
-
         fig_radar.add_hline(
             y=50,
             line_dash="dash",
             line_width=1,
             line_color="rgba(23,23,23,.28)",
         )
-
         fig_radar = standard_layout(
             fig_radar,
             650,
         )
-
         fig_radar.update_layout(
             coloraxis_colorbar=dict(
                 title="Índice",
             ),
         )
-
         st.plotly_chart(
             fig_radar,
             width="stretch",
         )
-
         st.caption(
             "Valores de variação superiores a 500% "
             "são limitados visualmente no gráfico para "
@@ -1576,11 +1283,13 @@ elif pagina == "Radar de atenção":
             "continuam armazenados no dataset."
         )
 
+        # ----------------------------------------
+        # TOP SINAIS
+        # ----------------------------------------
 
         st.subheader(
             "Maiores índices de atenção"
         )
-
         top_radar = (
             ranking
             .head(10)
@@ -1589,15 +1298,17 @@ elif pagina == "Radar de atenção":
                 ascending=True,
             )
         )
-
         top_radar[
             "identificacao"
         ] = (
-            top_radar["distrito"]
+            top_radar[
+                "distrito"
+            ]
             + " · "
-            + top_radar["servico"]
+            + top_radar[
+                "servico"
+            ]
         )
-
         fig_top = px.bar(
             top_radar,
             x="indice_atencao",
@@ -1610,79 +1321,83 @@ elif pagina == "Radar de atenção":
                 "",
             },
         )
-
         fig_top.update_xaxes(
-            range=[0, 100]
+            range=[
+                0,
+                100,
+            ]
         )
-
         fig_top = standard_layout(
             fig_top,
             470,
         )
-
         fig_top.update_layout(
             showlegend=False,
         )
-
         st.plotly_chart(
             fig_top,
             width="stretch",
         )
 
+# ============================================================
+# PÁGINA 3
+# INVESTIGAR SINAL
+# ============================================================
 
 elif pagina == "Investigar sinal":
-
     st.subheader(
         "Investigação de sinal"
     )
-
     st.caption(
         "Selecione uma ocorrência para entender "
         "por que ela apareceu no Radar."
     )
-
     if ranking.empty:
         st.info(
             "Não existem sinais disponíveis "
             "para os filtros selecionados."
         )
         st.stop()
-
     candidates = (
         ranking
         .head(100)
-        .reset_index(drop=True)
+        .reset_index(
+            drop=True
+        )
     )
-
     option = st.selectbox(
         "Sinal para investigar",
         options=list(
-            range(len(candidates))
+            range(
+                len(candidates)
+            )
         ),
         format_func=lambda i: (
-            f"{candidates.iloc[i]['distrito']} | "
+            f"{candidates.iloc[i]['distrito']}  |  "
             f"{candidates.iloc[i]['servico']}"
         ),
     )
-
-    selected = candidates.iloc[option]
-
+    selected = (
+        candidates
+        .iloc[option]
+    )
     st.markdown(
         f"### {selected['distrito']}"
     )
-
     st.markdown(
         f"**{selected['servico']}**"
     )
-
     st.caption(
         f"Tema: {selected['tema']}"
     )
 
+    # ----------------------------------------
+    # KPIs DO SINAL
+    # ----------------------------------------
+
     c1, c2, c3, c4, c5 = (
         st.columns(5)
     )
-
     c1.metric(
         "Índice de Atenção",
         (
@@ -1691,14 +1406,14 @@ elif pagina == "Investigar sinal":
             + "/100"
         ),
     )
-
     c2.metric(
         "Solicitações",
         format_integer(
-            selected["solicitacoes"]
+            selected[
+                "solicitacoes"
+            ]
         ),
     )
-
     c3.metric(
         "Variação",
         format_change(
@@ -1707,61 +1422,72 @@ elif pagina == "Investigar sinal":
             ]
         ),
     )
-
     c4.metric(
         "Pendentes",
         format_percent(
-            selected["taxa_pendente"]
+            selected[
+                "taxa_pendente"
+            ]
         ),
     )
-
     c5.metric(
         "Tempo médio",
         format_days(
-            selected["tempo_medio_dias"]
+            selected[
+                "tempo_medio_dias"
+            ]
         ),
     )
-
-    if selected["anomalia"]:
+    if selected[
+        "anomalia"
+    ]:
         st.info(
             "Esta observação está entre o conjunto "
             "de maior atipicidade identificado pelo "
             "Isolation Forest."
         )
 
+    # ----------------------------------------
+    # HISTÓRICO
+    # ----------------------------------------
 
     history = df[
         (
             df["distrito"]
-            == selected["distrito"]
+            == selected[
+                "distrito"
+            ]
         )
         &
         (
             df["tema"]
-            == selected["tema"]
+            == selected[
+                "tema"
+            ]
         )
         &
         (
             df["servico"]
-            == selected["servico"]
+            == selected[
+                "servico"
+            ]
         )
     ].copy()
-
     history = history.sort_values(
         "semana"
     )
-
-
     st.subheader(
         "Evolução da demanda"
     )
-
     fig_history = go.Figure()
-
     fig_history.add_trace(
         go.Scatter(
-            x=history["semana"],
-            y=history["solicitacoes"],
+            x=history[
+                "semana"
+            ],
+            y=history[
+                "solicitacoes"
+            ],
             mode="lines+markers",
             name="Solicitações",
             line=dict(
@@ -1774,11 +1500,14 @@ elif pagina == "Investigar sinal":
             ),
         )
     )
-
     fig_history.add_trace(
         go.Scatter(
-            x=history["semana"],
-            y=history["volume_baseline"],
+            x=history[
+                "semana"
+            ],
+            y=history[
+                "volume_baseline"
+            ],
             mode="lines",
             name="Baseline recente",
             line=dict(
@@ -1788,15 +1517,17 @@ elif pagina == "Investigar sinal":
             ),
         )
     )
-
-    fig_history = standard_layout(
-        fig_history,
-        470,
+    fig_history = (
+        standard_layout(
+            fig_history,
+            470,
+        )
     )
-
     fig_history.update_layout(
         xaxis_title="",
-        yaxis_title="Solicitações",
+        yaxis_title=(
+            "Solicitações"
+        ),
         hovermode="x unified",
         legend=dict(
             orientation="h",
@@ -1806,43 +1537,45 @@ elif pagina == "Investigar sinal":
             x=0,
         ),
     )
-
     st.plotly_chart(
         fig_history,
         width="stretch",
     )
 
+    # ----------------------------------------
+    # EXPLICABILIDADE
+    # ----------------------------------------
 
     st.subheader(
         "Por que este sinal recebeu atenção?"
     )
-
-    component_data = pd.DataFrame(
-        {
-            "Componente": [
-                "Crescimento da demanda",
-                "Pendência",
-                "Tempo de atendimento",
-            ],
-            "Score": [
-                selected[
-                    "score_crescimento"
+    component_data = (
+        pd.DataFrame(
+            {
+                "Componente": [
+                    "Crescimento da demanda",
+                    "Pendência",
+                    "Tempo de atendimento",
                 ],
-                selected[
-                    "score_pendencia"
+                "Score": [
+                    selected[
+                        "score_crescimento"
+                    ],
+                    selected[
+                        "score_pendencia"
+                    ],
+                    selected[
+                        "score_tempo"
+                    ],
                 ],
-                selected[
-                    "score_tempo"
+                "Peso": [
+                    "40%",
+                    "35%",
+                    "25%",
                 ],
-            ],
-            "Peso": [
-                "40%",
-                "35%",
-                "25%",
-            ],
-        }
+            }
+        )
     )
-
     fig_components = px.bar(
         component_data,
         x="Score",
@@ -1856,30 +1589,35 @@ elif pagina == "Investigar sinal":
             "",
         },
     )
-
     fig_components.update_xaxes(
-        range=[0, 100]
+        range=[
+            0,
+            100,
+        ]
     )
-
-    fig_components = standard_layout(
-        fig_components,
-        330,
+    fig_components = (
+        standard_layout(
+            fig_components,
+            330,
+        )
     )
-
     fig_components.update_layout(
         showlegend=False,
     )
-
     st.plotly_chart(
         fig_components,
         width="stretch",
     )
 
+    # ----------------------------------------
+    # LEITURA AUTOMÁTICA
+    # ----------------------------------------
 
     reasons = []
-
     if (
-        selected["score_crescimento"]
+        selected[
+            "score_crescimento"
+        ]
         >= 75
     ):
         reasons.append(
@@ -1887,30 +1625,31 @@ elif pagina == "Investigar sinal":
             "está entre os valores mais "
             "elevados da base"
         )
-
     if (
-        selected["score_pendencia"]
+        selected[
+            "score_pendencia"
+        ]
         >= 75
     ):
         reasons.append(
             "taxa de pendência está "
             "relativamente elevada"
         )
-
     if (
-        selected["score_tempo"]
+        selected[
+            "score_tempo"
+        ]
         >= 75
     ):
         reasons.append(
             "tempo médio de atendimento "
             "está relativamente elevado"
         )
-
     if reasons:
-
         if len(reasons) == 1:
-            reason_text = reasons[0]
-
+            reason_text = (
+                reasons[0]
+            )
         else:
             reason_text = (
                 ", ".join(
@@ -1919,22 +1658,14 @@ elif pagina == "Investigar sinal":
                 + " e "
                 + reasons[-1]
             )
-
         st.markdown(
-            f"**Leitura do sinal**  \n"
-            f"Nesta observação, {reason_text}. "
-            "Esses fatores contribuíram para elevar "
-            "o Índice de Atenção."
+            f"**Leitura do sinal**  \nNesta observação, {reason_text}. Esses fatores contribuíram para elevar o Índice de Atenção."
         )
-
     else:
         st.markdown(
-            "**Leitura do sinal**  \n"
-            "Nenhum componente isolado está no quartil "
-            "superior da distribuição. O resultado decorre "
-            "da combinação dos indicadores."
+            "**Leitura do sinal**  \nNenhum componente isolado está no quartil superior da distribuição. "
+            "O resultado decorre da combinação dos indicadores."
         )
-
     st.warning(
         "O Índice de Atenção não mede gravidade "
         "do problema e não determina automaticamente "
@@ -1942,48 +1673,39 @@ elif pagina == "Investigar sinal":
         "como um sinal para apoiar investigação."
     )
 
+# ============================================================
+# PÁGINA 4
+# METODOLOGIA
+# ============================================================
 
 elif pagina == "Metodologia":
-
     st.subheader(
         "Como funciona o Radar 156"
     )
-
     st.markdown(
-        "O Radar 156 transforma registros operacionais "
-        "do SP156 em sinais analíticos que podem ajudar "
-        "equipes de gestão a identificar mudanças que "
-        "merecem investigação."
+        "O Radar 156 transforma registros operacionais do SP156 em sinais analíticos que podem "
+        "ajudar equipes de gestão a identificar mudanças que merecem investigação."
     )
-
     col1, col2 = st.columns(2)
-
     with col1:
         st.markdown(
             """<div class="method-step"><div class="method-number">ETAPA 01</div><div class="method-title">Coleta</div><div class="method-description">Dados públicos dos dois primeiros trimestres de 2026 do SP156.</div></div>
-            <div class="method-step"><div class="method-number">ETAPA 02</div><div class="method-title">Tratamento</div><div class="method-description">Padronização de datas, status, distritos e tratamento de valores ausentes ou não identificáveis.</div></div>
-            <div class="method-step"><div class="method-number">ETAPA 03</div><div class="method-title">Agregação</div><div class="method-description">Os registros são consolidados por semana, distrito, tema e serviço.</div></div>""",
+<div class="method-step"><div class="method-number">ETAPA 02</div><div class="method-title">Tratamento</div><div class="method-description">Padronização de datas, status, distritos e tratamento de valores ausentes ou não identificáveis.</div></div>
+<div class="method-step"><div class="method-number">ETAPA 03</div><div class="method-title">Agregação</div><div class="method-description">Os registros são consolidados por semana, distrito, tema e serviço.</div></div>""",
             unsafe_allow_html=True,
         )
-
     with col2:
         st.markdown(
             """<div class="method-step"><div class="method-number">ETAPA 04</div><div class="method-title">Indicadores</div><div class="method-description">Volume, crescimento da demanda, pendência e tempo médio de atendimento.</div></div>
-            <div class="method-step"><div class="method-number">ETAPA 05</div><div class="method-title">Índice</div><div class="method-description">Combinação heurística dos indicadores para destacar pontos que merecem investigação.</div></div>
-            <div class="method-step"><div class="method-number">ETAPA 06</div><div class="method-title">Anomalias</div><div class="method-description">Isolation Forest identifica o conjunto de observações com maior atipicidade estatística.</div></div>""",
+<div class="method-step"><div class="method-number">ETAPA 05</div><div class="method-title">Índice</div><div class="method-description">Combinação heurística dos indicadores para destacar pontos que merecem investigação.</div></div>
+<div class="method-step"><div class="method-number">ETAPA 06</div><div class="method-title">Anomalias</div><div class="method-description">Isolation Forest identifica o conjunto de observações com maior atipicidade estatística.</div></div>""",
             unsafe_allow_html=True,
         )
-
     st.divider()
-
     st.subheader(
         "Índice de Atenção"
     )
-
-    st.latex(
-        r"I = 0.40C + 0.35P + 0.25T"
-    )
-
+    st.latex(r"I = 0.40C + 0.35P + 0.25T")
     st.markdown(
         """<div class="method-copy">
         <p><strong>Onde:</strong></p>
@@ -1994,78 +1716,65 @@ elif pagina == "Metodologia":
         </div>""",
         unsafe_allow_html=True,
     )
-
     st.subheader(
         "Detecção de anomalias"
     )
-
     st.markdown(
-        "O Radar utiliza **Isolation Forest**, um algoritmo "
-        "de aprendizado não supervisionado. Nesta versão, "
-        "o parâmetro `contamination=0.03` define aproximadamente "
-        "3% das observações territoriais como o conjunto de maior "
-        "atipicidade. Portanto, a classificação de anomalia não "
-        "significa automaticamente que existe um problema grave. "
-        "Ela indica apenas um padrão estatístico menos comum em "
-        "relação ao conjunto analisado."
+        "O Radar utiliza **Isolation Forest**, um algoritmo de aprendizado não supervisionado. "
+        "Nesta versão, o parâmetro `contamination=0.03` define aproximadamente 3% das observações "
+        "territoriais como o conjunto de maior atipicidade. Portanto, a classificação de anomalia "
+        "não significa automaticamente que existe um problema grave. Ela indica apenas um padrão "
+        "estatístico menos comum em relação ao conjunto analisado."
     )
-
     st.subheader(
         "Qualidade e cobertura territorial"
     )
-
     total_dataset = int(
-        df["solicitacoes"].sum()
+        df[
+            "solicitacoes"
+        ].sum()
     )
-
     total_territorial = int(
         df.loc[
-            df["distrito_valido"],
+            df[
+                "distrito_valido"
+            ],
             "solicitacoes",
         ].sum()
     )
-
     dataset_coverage = (
         total_territorial
         / total_dataset
     )
-
-    qa1, qa2, qa3 = st.columns(3)
-
+    qa1, qa2, qa3 = (
+        st.columns(3)
+    )
     qa1.metric(
         "Solicitações analisadas",
         format_integer(
             total_dataset
         ),
     )
-
     qa2.metric(
         "Com distrito identificado",
         format_integer(
             total_territorial
         ),
     )
-
     qa3.metric(
         "Cobertura territorial",
         format_percent(
             dataset_coverage
         ),
     )
-
     st.markdown(
-        "Registros cujo campo Distrito estava vazio ou "
-        "continha apenas um código numérico foram mantidos "
-        "nos indicadores gerais, mas excluídos das análises "
-        "territoriais. Essa decisão evita atribuir uma "
-        "localização que não pode ser sustentada diretamente "
-        "pelos dados."
+        "Registros cujo campo Distrito estava vazio ou continha apenas um código numérico foram "
+        "mantidos nos indicadores gerais, mas excluídos das análises territoriais. Essa decisão "
+        "evita atribuir uma localização que não pode ser sustentada diretamente pelos dados."
     )
-
     st.subheader(
         "Limitações atuais"
     )
-
     st.markdown(
         "- O período histórico ainda é curto, cobrindo apenas o primeiro semestre de 2026.\n"
         "- Solicitações do SP156 não equivalem diretamente ao número de problemas existentes na cidade.\n"
@@ -2075,11 +1784,9 @@ elif pagina == "Metodologia":
         "- Os pesos do Índice de Atenção ainda não foram validados com gestores municipais.\n"
         "- O baseline utiliza as observações anteriores disponíveis e ainda não modela explicitamente sazonalidade."
     )
-
     st.subheader(
         "Possíveis evoluções"
     )
-
     st.markdown(
         "- Atualização automatizada quando novos dados do SP156 forem publicados.\n"
         "- Incorporação de um histórico de vários anos.\n"
@@ -2092,7 +1799,6 @@ elif pagina == "Metodologia":
         "- Simulação de capacidade operacional e backlog.\n"
         "- Separação futura entre frontend e API analítica para uma arquitetura de produção."
     )
-
     st.info(
         "Fonte principal: Portal de Dados Abertos "
         "da Prefeitura de São Paulo, conjunto Dados do SP156."
