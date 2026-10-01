@@ -641,7 +641,61 @@ st.markdown(
         font-weight: 750 !important;
     }
 
-        /* Dataframe, gráficos e alertas */
+    /* Cards da metodologia */
+    .info-card,
+    .method-step {
+        height: 100%;
+        margin-bottom: .85rem;
+        padding: 1.2rem 1.2rem 1.15rem;
+        border: 2px solid #050506;
+        border-radius: 0;
+        background: var(--radar-surface);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .method-step:nth-of-type(3n+1) {
+        background: #201719;
+    }
+
+    .method-step:nth-of-type(3n+2) {
+        background: #171727;
+    }
+
+    .method-step:nth-of-type(3n) {
+        background: #1B1B22;
+    }
+
+    .info-card-title,
+    .method-number {
+        display: inline-block;
+        margin-bottom: .7rem;
+        padding: .28rem .48rem;
+        border: 2px solid #050506;
+        background: var(--radar-red);
+        color: #09090B;
+        font-size: .61rem;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: .14em;
+    }
+
+    .info-card-value,
+    .method-title {
+        color: var(--radar-text);
+        font-size: 1.06rem;
+        font-weight: 900;
+        letter-spacing: -.025em;
+    }
+
+    .method-description {
+        margin-top: .4rem;
+        color: var(--radar-muted);
+        font-size: .9rem;
+        font-weight: 560;
+        line-height: 1.52;
+    }
+
+    /* Dataframe, gráficos e alertas */
     [data-testid="stDataFrame"] {
         overflow: hidden;
         border: 2px solid #050506;
@@ -1891,36 +1945,18 @@ elif pagina == "Metodologia":
 
     with col1:
         st.markdown(
-            """
-### Etapa 01 · Coleta
-
-Dados públicos dos dois primeiros trimestres de 2026 do SP156.
-
-### Etapa 02 · Tratamento
-
-Padronização de datas, status, distritos e tratamento de valores ausentes ou não identificáveis.
-
-### Etapa 03 · Agregação
-
-Os registros são consolidados por semana, distrito, tema e serviço.
-            """
+            """<div class="method-step"><div class="method-number">ETAPA 01</div><div class="method-title">Coleta</div><div class="method-description">Dados públicos dos dois primeiros trimestres de 2026 do SP156.</div></div>
+            <div class="method-step"><div class="method-number">ETAPA 02</div><div class="method-title">Tratamento</div><div class="method-description">Padronização de datas, status, distritos e tratamento de valores ausentes ou não identificáveis.</div></div>
+            <div class="method-step"><div class="method-number">ETAPA 03</div><div class="method-title">Agregação</div><div class="method-description">Os registros são consolidados por semana, distrito, tema e serviço.</div></div>""",
+            unsafe_allow_html=True,
         )
 
     with col2:
         st.markdown(
-            """
-### Etapa 04 · Indicadores
-
-Volume, crescimento da demanda, pendência e tempo médio de atendimento.
-
-### Etapa 05 · Índice
-
-Combinação heurística dos indicadores para destacar pontos que merecem investigação.
-
-### Etapa 06 · Anomalias
-
-Isolation Forest identifica o conjunto de observações com maior atipicidade estatística.
-            """
+            """<div class="method-step"><div class="method-number">ETAPA 04</div><div class="method-title">Indicadores</div><div class="method-description">Volume, crescimento da demanda, pendência e tempo médio de atendimento.</div></div>
+        <div class="method-step"><div class="method-number">ETAPA 05</div><div class="method-title">Índice</div><div class="method-description">Combinação heurística dos indicadores para destacar pontos que merecem investigação.</div></div>
+        <div class="method-step"><div class="method-number">ETAPA 06</div><div class="method-title">Anomalias</div><div class="method-description">Isolation Forest identifica o conjunto de observações com maior atipicidade estatística.</div></div>""",
+            unsafe_allow_html=True,
         )
 
     st.divider()
