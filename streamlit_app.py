@@ -53,8 +53,35 @@ st.markdown(
     }
 
     .stApp {
-        background: var(--radar-bg);
         color: var(--radar-text);
+        background:
+            linear-gradient(
+                rgba(255, 255, 255, .018) 1px,
+                transparent 1px
+            ),
+            linear-gradient(
+                90deg,
+                rgba(255, 255, 255, .018) 1px,
+                transparent 1px
+            ),
+            radial-gradient(
+                circle at 78% -10%,
+                rgba(255, 92, 53, .14),
+                transparent 30rem
+            ),
+            radial-gradient(
+                circle at 8% 8%,
+                rgba(77, 55, 255, .10),
+                transparent 28rem
+            ),
+            var(--radar-bg);
+
+        background-size:
+            30px 30px,
+            30px 30px,
+            auto,
+            auto,
+            auto;
     }
 
     .block-container {
@@ -104,7 +131,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
 
 @st.cache_data
 def load_data():
