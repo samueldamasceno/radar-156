@@ -5,8 +5,16 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+
 import streamlit as st
 
+# ============================================================
+# CONFIGURAÇÕES
+# ============================================================
+
+DATA_FILE = Path(
+    "data/processed/radar156.parquet"
+)
 
 DATA_FILE = Path("data/processed/radar156.parquet")
 
@@ -17,6 +25,10 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# ============================================================
+# ESTILO
+# ============================================================
 
 st.markdown(
     """
@@ -442,6 +454,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# ============================================================
+# FUNÇÕES
+# ============================================================
+
 @st.cache_data
 def load_data():
     df = pd.read_parquet(DATA_FILE)
@@ -528,6 +544,9 @@ def standard_layout(fig, height=420):
 
     return fig
 
+# ============================================================
+# VERIFICAÇÃO DO DATASET
+# ============================================================
 
 if not DATA_FILE.exists():
     st.error(
