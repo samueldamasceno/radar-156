@@ -658,22 +658,17 @@ elif pagina == "Investigar sinal":
         ),
     )
 
-    selected = (
-        candidates.iloc[option]
-    )
+    selected = candidates.iloc[option]
 
     st.markdown(
         f"### {selected['distrito']}"
     )
-
     st.markdown(
         f"**{selected['servico']}**"
     )
-
     st.caption(
         f"Tema: {selected['tema']}"
     )
-
 
     c1, c2, c3, c4, c5 = (
         st.columns(5)
@@ -691,9 +686,7 @@ elif pagina == "Investigar sinal":
     c2.metric(
         "Solicitações",
         format_integer(
-            selected[
-                "solicitacoes"
-            ]
+            selected["solicitacoes"]
         ),
     )
 
@@ -723,6 +716,15 @@ elif pagina == "Investigar sinal":
             ]
         ),
     )
+
+    if selected[
+        "anomalia"
+    ]:
+        st.info(
+            "Esta observação está entre o conjunto "
+            "de maior atipicidade identificado pelo "
+            "Isolation Forest."
+        )
 
 
 elif pagina == "Metodologia":
