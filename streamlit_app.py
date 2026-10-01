@@ -144,6 +144,45 @@ st.markdown(
     [data-testid="stSidebar"] > div:first-child {
         padding: 1.25rem 1rem 1.15rem;
     }
+
+    .sidebar-brand {
+    margin: .05rem 0 1rem;
+    padding: .15rem .15rem 1.15rem;
+    border-bottom: 1px solid #2A2A33;
+    }
+
+    .sidebar-brand-kicker {
+        margin-bottom: .55rem;
+        color: var(--radar-red);
+        font-size: .62rem;
+        font-weight: 900;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+    }
+
+    .sidebar-brand-title {
+        margin: 0;
+        color: var(--radar-text);
+        font-size: 1.75rem;
+        font-weight: 950;
+        letter-spacing: -.06em;
+        line-height: .95;
+    }
+
+    .sidebar-brand-line {
+        width: 42px;
+        height: 4px;
+        margin: .85rem 0 .75rem;
+        background: var(--radar-red);
+    }
+
+    .sidebar-brand-copy {
+        max-width: 230px;
+        color: #777781;
+        font-size: .78rem;
+        font-weight: 650;
+        line-height: 1.5;
+    }
     </style>
     """,
     unsafe_allow_html=True,
