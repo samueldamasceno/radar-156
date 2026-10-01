@@ -558,24 +558,12 @@ if not DATA_FILE.exists():
 
 df = load_data()
 
+# ============================================================
+# SIDEBAR: NAVEGAÇÃO
+# ============================================================
+
 st.sidebar.markdown(
-    """
-    <div class="sidebar-brand">
-        <div class="sidebar-brand-kicker">
-            SP156 · Dados públicos
-        </div>
-
-        <div class="sidebar-brand-title">
-            RADAR 156
-        </div>
-
-        <div class="sidebar-brand-line"></div>
-
-        <div class="sidebar-brand-copy">
-            Inteligência operacional sobre a demanda municipal.
-        </div>
-    </div>
-    """,
+    """<div class="sidebar-brand"><div class="sidebar-brand-kicker">SP156 · Dados públicos</div><div class="sidebar-brand-title">RADAR 156</div><div class="sidebar-brand-line"></div><div class="sidebar-brand-copy">Inteligência operacional sobre a demanda municipal.</div></div>""",
     unsafe_allow_html=True,
 )
 
@@ -587,47 +575,24 @@ pagina = st.sidebar.radio(
         "Investigar sinal",
         "Metodologia",
     ],
+    label_visibility="collapsed"
 )
 
 st.sidebar.markdown(
-    """
-    <div class="sidebar-footer">
-        <div class="sidebar-footer-label">
-            Protótipo analítico
-        </div>
-
-        <div class="sidebar-footer-copy">
-            Prefeitura de São Paulo · 2026
-        </div>
-    </div>
-    """,
+    """<div class="sidebar-footer"><div class="sidebar-footer-label">Protótipo analítico</div><div class="sidebar-footer-copy">Prefeitura de São Paulo · 2026</div></div>""",
     unsafe_allow_html=True,
 )
 
+# ============================================================
+# HEADER
+# ============================================================
+
 st.markdown(
-    """
-    <section class="radar-hero">
-
-        <div class="hero-kicker">
-            <span class="hero-dot"></span>
-            Inteligência operacional sobre a demanda municipal
-        </div>
-
-        <div class="hero-title">
-            Radar <span>156</span>
-        </div>
-
-        <div class="hero-subtitle">
-            Monitoramento de alterações relevantes
-            na demanda por serviços municipais.
-            <br>
-            O radar combina comportamento recente,
-            pendência e tempo de atendimento para
-            destacar sinais que merecem investigação.
-        </div>
-
-    </section>
-    """,
+    """<section class="radar-hero">
+    <div class="hero-kicker"><span class="hero-dot"></span>Inteligência operacional sobre a demanda municipal</div>
+    <div class="hero-title">Radar <span>156</span></div>
+    <div class="hero-subtitle">Monitoramento de alterações relevantes na demanda por serviços municipais.<br>O radar combina comportamento recente, pendência e tempo de atendimento para destacar sinais que merecem investigação.</div>
+    </section>""",
     unsafe_allow_html=True,
 )
 
