@@ -246,6 +246,47 @@ st.markdown(
     [data-baseweb="radio"] > div:first-child {
         display: none !important;
     }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label {
+    transition:
+        background .16s ease,
+        border-color .16s ease,
+        transform .16s ease;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label:hover {
+        transform: translateX(2px);
+        background: #17171D;
+        border-color: #2C2C35;
+    }
+
+    [data-testid="stSidebar"]
+    [role="radiogroup"]
+    label:has(input:checked) {
+        background:
+            linear-gradient(
+                90deg,
+                rgba(255,92,53,.18),
+                rgba(255,92,53,.055)
+            );
+
+        border-color: rgba(255,92,53,.42);
+        box-shadow:
+            inset 3px 0 0 var(--radar-red);
+    }
+
+    [data-testid="stSidebar"]
+    [role="radiogroup"]
+    label:has(input:checked)::before {
+        color: var(--radar-red);
+    }
+
+    [data-testid="stSidebar"]
+    [role="radiogroup"]
+    label:has(input:checked) p {
+        color: #FFF5F1 !important;
+        font-weight: 900 !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
