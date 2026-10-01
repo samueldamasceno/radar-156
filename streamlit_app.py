@@ -40,6 +40,18 @@ st.markdown(
         --shadow-lg: 8px 8px 0 #050506;
     }
 
+    html,
+    body,
+    [class*="css"] {
+        font-family:
+            Inter,
+            ui-sans-serif,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+    }
+
     .stApp {
         background: var(--radar-bg);
         color: var(--radar-text);
@@ -62,8 +74,31 @@ st.markdown(
         backdrop-filter: blur(10px);
     }
 
-    h1, h2, h3, h4, p, label, .stCaption {
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    label,
+    .stCaption {
         color: var(--radar-text);
+    }
+
+    h1 {
+        font-size: clamp(2.9rem, 5vw, 5rem) !important;
+        line-height: .9 !important;
+        letter-spacing: -.065em !important;
+        font-weight: 900 !important;
+    }
+
+    h2 {
+        letter-spacing: -.045em !important;
+        font-weight: 900 !important;
+    }
+
+    h3 {
+        letter-spacing: -.035em !important;
+        font-weight: 850 !important;
     }
     </style>
     """,
