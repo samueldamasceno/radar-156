@@ -218,9 +218,7 @@ if pagina == "Visão geral":
         ).sum()
     )
 
-    anomalias = int(
-        ranking["anomalia"].sum()
-    )
+    anomalias = int(ranking["anomalia"].sum())
 
     cols = st.columns(5)
 
@@ -636,18 +634,15 @@ elif pagina == "Investigar sinal":
 
     history = df[
         (
-            df["distrito"]
-            == selected["distrito"]
+            df["distrito"] == selected["distrito"]
         )
         &
         (
-            df["tema"]
-            == selected["tema"]
+            df["tema"] == selected["tema"]
         )
         &
         (
-            df["servico"]
-            == selected["servico"]
+            df["servico"] == selected["servico"]
         )
     ].copy()
 
@@ -890,4 +885,56 @@ elif pagina == "Metodologia":
         "automaticamente que existe um problema grave. "
         "Ela indica apenas um padrão estatístico menos "
         "comum em relação ao conjunto analisado."
+    )
+
+    st.subheader(
+        "Qualidade e cobertura territorial"
+    )
+
+    total_dataset = int(
+        df["solicitacoes"].sum()
+    )
+
+    total_territorial = int(
+        df.loc[
+            df["distrito_valido"],
+            "solicitacoes",
+        ].sum()
+    )
+
+    dataset_coverage = (
+        total_territorial
+        / total_dataset
+    )
+
+    qa1, qa2, qa3 = st.columns(3)
+
+    qa1.metric(
+        "Solicitações analisadas",
+        format_integer(
+            total_dataset
+        ),
+    )
+
+    qa2.metric(
+        "Com distrito identificado",
+        format_integer(
+            total_territorial
+        ),
+    )
+
+    qa3.metric(
+        "Cobertura territorial",
+        format_percent(
+            dataset_coverage
+        ),
+    )
+
+    st.markdown(
+        "Registros cujo campo Distrito estava vazio ou "
+        "continha apenas um código numérico foram mantidos "
+        "nos indicadores gerais, mas excluídos das análises "
+        "territoriais. Essa decisão evita atribuir uma "
+        "localização que não pode ser sustentada diretamente "
+        "pelos dados."
     )
