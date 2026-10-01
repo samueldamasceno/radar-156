@@ -8,9 +8,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 
-DATA_FILE = Path(
-    "data/processed/radar156.parquet"
-)
+DATA_FILE = Path("data/processed/radar156.parquet")
 
 
 st.set_page_config(
@@ -24,52 +22,32 @@ st.set_page_config(
 @st.cache_data
 def load_data():
     df = pd.read_parquet(DATA_FILE)
-
-    df["semana"] = pd.to_datetime(
-        df["semana"]
-    )
-
+    df["semana"] = pd.to_datetime(df["semana"])
     return df
 
 
 def format_integer(value):
     if pd.isna(value):
         return "N/D"
-
-    return (
-        f"{int(value):,}"
-        .replace(",", ".")
-    )
+    return f"{int(value):,}".replace(",", ".")
 
 
 def format_percent(value):
     if pd.isna(value):
         return "N/D"
-
-    return (
-        f"{value * 100:.1f}%"
-        .replace(".", ",")
-    )
+    return f"{value * 100:.1f}%".replace(".", ",")
 
 
 def format_change(value):
     if pd.isna(value):
         return "Sem baseline"
-
-    return (
-        f"{value:+.1f}%"
-        .replace(".", ",")
-    )
+    return f"{value:+.1f}%".replace(".", ",")
 
 
 def format_days(value):
     if pd.isna(value):
         return "N/D"
-
-    return (
-        f"{value:.1f} dias"
-        .replace(".", ",")
-    )
+    return f"{value:.1f} dias".replace(".", ",")
 
 
 if not DATA_FILE.exists():
@@ -110,24 +88,18 @@ st.caption(
 
 st.subheader("Filtros")
 
-temas = sorted(
-    df["tema"]
-    .dropna()
-    .unique()
-)
+temas = sorted(df["tema"].dropna().unique())
 
 tema_selecionado = st.selectbox(
     "Tema",
     ["Todos"] + temas,
 )
 
-
 filtered = df.copy()
 
 if tema_selecionado != "Todos":
     filtered = filtered[
-        filtered["tema"]
-        == tema_selecionado
+        filtered["tema"] == tema_selecionado
     ]
 
 
@@ -145,22 +117,17 @@ distrito_selecionado = st.selectbox(
     ["Todos"] + distritos,
 )
 
-
 if distrito_selecionado != "Todos":
     filtered = filtered[
-        filtered["distrito"]
-        == distrito_selecionado
+        filtered["distrito"] == distrito_selecionado
     ]
 
 
 semanas = sorted(
     pd.to_datetime(
-        filtered["semana"]
-        .dropna()
-        .unique()
+        filtered["semana"].dropna().unique()
     )
 )
-
 
 if not semanas:
     st.warning(
@@ -179,9 +146,8 @@ semana_selecionada = st.selectbox(
     "Semana de referência",
     semanas,
     index=default_week_index,
-    format_func=lambda date: (
-        pd.Timestamp(date)
-        .strftime("%d/%m/%Y")
+    format_func=lambda date: pd.Timestamp(date).strftime(
+        "%d/%m/%Y"
     ),
 )
 
@@ -200,26 +166,20 @@ volume_minimo = st.slider(
 
 
 current = filtered[
-    filtered["semana"]
-    == semana_selecionada
+    filtered["semana"] == semana_selecionada
 ].copy()
-
 
 territorial_current = current[
     current["distrito_valido"]
 ].copy()
-
 
 ranking = territorial_current[
     (
         territorial_current["solicitacoes"]
         >= volume_minimo
     )
-    & territorial_current[
-        "indice_atencao"
-    ].notna()
+    & territorial_current["indice_atencao"].notna()
 ].copy()
-
 
 ranking = ranking.sort_values(
     [
@@ -227,115 +187,68 @@ ranking = ranking.sort_values(
         "score_anomalia",
         "solicitacoes",
     ],
-    ascending=[
-        False,
-        False,
-        False,
-    ],
+    ascending=[False, False, False],
 )
 
 
 if pagina == "Visão geral":
 
-    st.subheader(
-        "Situação na semana selecionada"
-    )
+    st.subheader("Situação na semana selecionada")
 
-    total = int(
-        current["solicitacoes"].sum()
-    )
-
-    pendentes = int(
-        current["pendentes"].sum()
-    )
+    total = int(current["solicitacoes"].sum())
+    pendentes = int(current["pendentes"].sum())
 
     if total > 0:
-        taxa_pendente_geral = (
-            pendentes / total
-        )
+        taxa_pendente_geral = pendentes / total
     else:
         taxa_pendente_geral = np.nan
 
-
     territorial_volume = int(
         current.loc[
-            current[
-                "distrito_valido"
-            ],
+            current["distrito_valido"],
             "solicitacoes",
         ].sum()
     )
 
     if total > 0:
-        cobertura = (
-            territorial_volume
-            / total
-        )
+        cobertura = territorial_volume / total
     else:
         cobertura = np.nan
 
-
     sinais_elevados = int(
         (
-            ranking[
-                "indice_atencao"
-            ]
-            >= 75
+            ranking["indice_atencao"] >= 75
         ).sum()
     )
 
+    anomalias = int(ranking["anomalia"].sum())
 
-    anomalias = int(
-        ranking[
-            "anomalia"
-        ].sum()
-    )
-
-
-    col1, col2, col3, col4, col5 = (
-        st.columns(5)
-    )
-
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     col1.metric(
         "Solicitações",
-        format_integer(
-            total
-        ),
+        format_integer(total),
     )
-
 
     col2.metric(
         "Pendentes",
-        format_percent(
-            taxa_pendente_geral
-        ),
+        format_percent(taxa_pendente_geral),
     )
-
 
     col3.metric(
         "Cobertura territorial",
-        format_percent(
-            cobertura
-        ),
+        format_percent(cobertura),
     )
-
 
     col4.metric(
         "Atenção elevada",
-        format_integer(
-            sinais_elevados
-        ),
+        format_integer(sinais_elevados),
     )
-
 
     col5.metric(
         "Sinais atípicos",
-        format_integer(
-            anomalias
-        ),
+        format_integer(anomalias),
     )
-
 
     st.caption(
         "Cobertura territorial representa a parcela "
@@ -343,11 +256,7 @@ if pagina == "Visão geral":
         "identificado."
     )
 
-
-    st.subheader(
-        "Evolução das solicitações"
-    )
-
+    st.subheader("Evolução das solicitações")
 
     weekly = (
         filtered
@@ -356,17 +265,10 @@ if pagina == "Visão geral":
             as_index=False,
         )
         .agg(
-            solicitacoes=(
-                "solicitacoes",
-                "sum",
-            ),
-            pendentes=(
-                "pendentes",
-                "sum",
-            ),
+            solicitacoes=("solicitacoes", "sum"),
+            pendentes=("pendentes", "sum"),
         )
     )
-
 
     fig_weekly = px.line(
         weekly,
@@ -375,17 +277,14 @@ if pagina == "Visão geral":
         markers=True,
         labels={
             "semana": "",
-            "solicitacoes":
-            "Solicitações",
+            "solicitacoes": "Solicitações",
         },
     )
-
 
     st.plotly_chart(
         fig_weekly,
         use_container_width=True,
     )
-
 
     st.caption(
         "A última semana do período é parcial "
@@ -393,28 +292,14 @@ if pagina == "Visão geral":
         "com semanas completas."
     )
 
-
     if tema_selecionado == "Todos":
-
-        chart_title = (
-            "Temas com maior demanda"
-        )
-
+        chart_title = "Temas com maior demanda"
         category_column = "tema"
-
     else:
-
-        chart_title = (
-            "Serviços com maior demanda"
-        )
-
+        chart_title = "Serviços com maior demanda"
         category_column = "servico"
 
-
-    st.subheader(
-        chart_title
-    )
-
+    st.subheader(chart_title)
 
     top_categories = (
         current
@@ -423,28 +308,17 @@ if pagina == "Visão geral":
             as_index=False,
         )
         .agg(
-            solicitacoes=(
-                "solicitacoes",
-                "sum",
-            )
+            solicitacoes=("solicitacoes", "sum")
         )
-        .nlargest(
-            8,
-            "solicitacoes",
-        )
+        .nlargest(8, "solicitacoes")
         .sort_values(
             "solicitacoes",
             ascending=True,
         )
     )
 
-
-    top_categories[
-        "categoria_grafico"
-    ] = (
-        top_categories[
-            category_column
-        ]
+    top_categories["categoria_grafico"] = (
+        top_categories[category_column]
         .astype(str)
         .map(
             lambda value: "<br>".join(
@@ -458,7 +332,6 @@ if pagina == "Visão geral":
         )
     )
 
-
     fig_categories = px.bar(
         top_categories,
         x="solicitacoes",
@@ -466,81 +339,51 @@ if pagina == "Visão geral":
         orientation="h",
         hover_name=category_column,
         labels={
-            "solicitacoes":
-            "Solicitações",
-            "categoria_grafico":
-            "",
+            "solicitacoes": "Solicitações",
+            "categoria_grafico": "",
         },
     )
-
 
     st.plotly_chart(
         fig_categories,
         use_container_width=True,
     )
 
-
     st.subheader(
         "Pontos que merecem investigação"
     )
-
 
     st.caption(
         "Combinações distrito + serviço ordenadas "
         "pelo Índice de Atenção."
     )
 
-
     if ranking.empty:
-
         st.info(
             "Nenhum sinal encontrado com "
             "os filtros atuais."
         )
 
     else:
+        ranking_display = ranking.head(15).copy()
 
-        ranking_display = (
-            ranking
-            .head(15)
-            .copy()
+        ranking_display["Variação"] = (
+            ranking_display["variacao_percentual"]
         )
 
-
-        ranking_display[
-            "Variação"
-        ] = ranking_display[
-            "variacao_percentual"
-        ]
-
-
-        ranking_display[
-            "Pendência"
-        ] = (
-            ranking_display[
-                "taxa_pendente"
-            ]
-            * 100
+        ranking_display["Pendência"] = (
+            ranking_display["taxa_pendente"] * 100
         )
 
+        ranking_display["Tempo médio"] = (
+            ranking_display["tempo_medio_dias"]
+        )
 
-        ranking_display[
-            "Tempo médio"
-        ] = ranking_display[
-            "tempo_medio_dias"
-        ]
-
-
-        ranking_display[
-            "Atípico"
-        ] = np.where(
-            ranking_display[
-                "anomalia"
-            ],
+        ranking_display["Atípico"] = np.where(
+            ranking_display["anomalia"],
             "Sim",
             "Não",
         )
-
 
         ranking_display = (
             ranking_display[
@@ -558,24 +401,14 @@ if pagina == "Visão geral":
             ]
             .rename(
                 columns={
-                    "distrito":
-                    "Distrito",
-
-                    "tema":
-                    "Tema",
-
-                    "servico":
-                    "Serviço",
-
-                    "solicitacoes":
-                    "Solicitações",
-
-                    "indice_atencao":
-                    "Índice",
+                    "distrito": "Distrito",
+                    "tema": "Tema",
+                    "servico": "Serviço",
+                    "solicitacoes": "Solicitações",
+                    "indice_atencao": "Índice",
                 }
             )
         )
-
 
         st.dataframe(
             ranking_display,
@@ -586,22 +419,18 @@ if pagina == "Visão geral":
                 st.column_config.NumberColumn(
                     format="%d",
                 ),
-
                 "Variação":
                 st.column_config.NumberColumn(
                     format="%.1f%%",
                 ),
-
                 "Pendência":
                 st.column_config.NumberColumn(
                     format="%.1f%%",
                 ),
-
                 "Tempo médio":
                 st.column_config.NumberColumn(
                     format="%.1f dias",
                 ),
-
                 "Índice":
                 st.column_config.ProgressColumn(
                     min_value=0,
@@ -614,10 +443,7 @@ if pagina == "Visão geral":
 
 elif pagina == "Radar de atenção":
 
-    st.subheader(
-        "Radar de atenção"
-    )
-
+    st.subheader("Radar de atenção")
 
     st.markdown(
         "Cada ponto representa uma combinação entre "
@@ -629,27 +455,17 @@ elif pagina == "Radar de atenção":
         "O tamanho representa o volume de solicitações."
     )
 
-
     if ranking.empty:
-
         st.info(
             "Não existem sinais disponíveis "
             "para esses filtros."
         )
 
     else:
+        plot_df = ranking.copy()
 
-        plot_df = (
-            ranking.copy()
-        )
-
-
-        plot_df[
-            "variacao_grafico"
-        ] = (
-            plot_df[
-                "variacao_percentual"
-            ]
+        plot_df["variacao_grafico"] = (
+            plot_df["variacao_percentual"]
             .clip(
                 lower=-100,
                 upper=500,
@@ -657,16 +473,9 @@ elif pagina == "Radar de atenção":
             .fillna(0)
         )
 
-
-        plot_df[
-            "pendencia_percentual"
-        ] = (
-            plot_df[
-                "taxa_pendente"
-            ]
-            * 100
+        plot_df["pendencia_percentual"] = (
+            plot_df["taxa_pendente"] * 100
         )
-
 
         fig_radar = px.scatter(
             plot_df,
@@ -692,24 +501,18 @@ elif pagina == "Radar de atenção":
             labels={
                 "variacao_grafico":
                 "Variação da demanda (%)",
-
                 "pendencia_percentual":
                 "Solicitações pendentes (%)",
-
                 "indice_atencao":
                 "Índice",
-
                 "distrito":
                 "Distrito",
-
                 "tema":
                 "Tema",
-
                 "solicitacoes":
                 "Solicitações",
             },
         )
-
 
         fig_radar.add_vline(
             x=0,
@@ -717,19 +520,16 @@ elif pagina == "Radar de atenção":
             line_width=1,
         )
 
-
         fig_radar.add_hline(
             y=50,
             line_dash="dash",
             line_width=1,
         )
 
-
         st.plotly_chart(
             fig_radar,
             use_container_width=True,
         )
-
 
         st.caption(
             "Valores de variação superiores a 500% "
@@ -738,11 +538,9 @@ elif pagina == "Radar de atenção":
             "continuam armazenados no dataset."
         )
 
-
         st.subheader(
             "Maiores índices de atenção"
         )
-
 
         top_radar = (
             ranking
@@ -753,19 +551,11 @@ elif pagina == "Radar de atenção":
             )
         )
 
-
-        top_radar[
-            "identificacao"
-        ] = (
-            top_radar[
-                "distrito"
-            ]
+        top_radar["identificacao"] = (
+            top_radar["distrito"]
             + " · "
-            + top_radar[
-                "servico"
-            ]
+            + top_radar["servico"]
         )
-
 
         fig_top = px.bar(
             top_radar,
@@ -775,20 +565,14 @@ elif pagina == "Radar de atenção":
             labels={
                 "indice_atencao":
                 "Índice de Atenção",
-
                 "identificacao":
                 "",
             },
         )
 
-
         fig_top.update_xaxes(
-            range=[
-                0,
-                100,
-            ]
+            range=[0, 100]
         )
-
 
         st.plotly_chart(
             fig_top,
@@ -798,42 +582,30 @@ elif pagina == "Radar de atenção":
 
 elif pagina == "Investigar sinal":
 
-    st.subheader(
-        "Investigação de sinal"
-    )
-
+    st.subheader("Investigação de sinal")
 
     st.caption(
         "Selecione uma ocorrência para entender "
         "por que ela apareceu no Radar."
     )
 
-
     if ranking.empty:
-
         st.info(
             "Não existem sinais disponíveis "
             "para os filtros selecionados."
         )
-
         st.stop()
-
 
     candidates = (
         ranking
         .head(100)
-        .reset_index(
-            drop=True
-        )
+        .reset_index(drop=True)
     )
-
 
     option = st.selectbox(
         "Sinal para investigar",
         options=list(
-            range(
-                len(candidates)
-            )
+            range(len(candidates))
         ),
         format_func=lambda i: (
             f"{candidates.iloc[i]['distrito']} | "
@@ -841,32 +613,21 @@ elif pagina == "Investigar sinal":
         ),
     )
 
-
-    selected = (
-        candidates
-        .iloc[option]
-    )
-
+    selected = candidates.iloc[option]
 
     st.markdown(
         f"### {selected['distrito']}"
     )
 
-
     st.markdown(
         f"**{selected['servico']}**"
     )
-
 
     st.caption(
         f"Tema: {selected['tema']}"
     )
 
-
-    c1, c2, c3, c4, c5 = (
-        st.columns(5)
-    )
-
+    c1, c2, c3, c4, c5 = st.columns(5)
 
     c1.metric(
         "Índice de Atenção",
@@ -877,115 +638,102 @@ elif pagina == "Investigar sinal":
         ),
     )
 
-
     c2.metric(
         "Solicitações",
         format_integer(
-            selected[
-                "solicitacoes"
-            ]
+            selected["solicitacoes"]
         ),
     )
-
 
     c3.metric(
         "Variação",
         format_change(
-            selected[
-                "variacao_percentual"
-            ]
+            selected["variacao_percentual"]
         ),
     )
-
 
     c4.metric(
         "Pendentes",
         format_percent(
-            selected[
-                "taxa_pendente"
-            ]
+            selected["taxa_pendente"]
         ),
     )
-
 
     c5.metric(
         "Tempo médio",
         format_days(
-            selected[
-                "tempo_medio_dias"
-            ]
+            selected["tempo_medio_dias"]
         ),
     )
 
-
-    if selected[
-        "anomalia"
-    ]:
-
+    if selected["anomalia"]:
         st.info(
             "Esta observação está entre o conjunto "
             "de maior atipicidade identificado pelo "
             "Isolation Forest."
         )
 
-
     history = df[
         (
             df["distrito"]
-            == selected[
-                "distrito"
-            ]
+            == selected["distrito"]
         )
         &
         (
             df["tema"]
-            == selected[
-                "tema"
-            ]
+            == selected["tema"]
         )
         &
         (
             df["servico"]
-            == selected[
-                "servico"
-            ]
+            == selected["servico"]
         )
     ].copy()
-
 
     history = history.sort_values(
         "semana"
     )
 
-
     st.subheader(
         "Evolução da demanda"
     )
 
-
     fig_history = go.Figure()
-
 
     fig_history.add_trace(
         go.Scatter(
-            x=history[
-                "semana"
-            ],
-            y=history[
-                "solicitacoes"
-            ],
+            x=history["semana"],
+            y=history["solicitacoes"],
             mode="lines+markers",
             name="Solicitações",
         )
     )
 
+    fig_history.add_trace(
+        go.Scatter(
+            x=history["semana"],
+            y=history["volume_baseline"],
+            mode="lines",
+            name="Baseline recente",
+            line=dict(
+                width=2,
+                dash="dash",
+            ),
+        )
+    )
 
     fig_history.update_layout(
         xaxis_title="",
         yaxis_title="Solicitações",
         hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
+        ),
     )
-
 
     st.plotly_chart(
         fig_history,
@@ -994,7 +742,6 @@ elif pagina == "Investigar sinal":
 
 
 elif pagina == "Metodologia":
-
     st.info(
         "Metodologia em desenvolvimento."
     )
