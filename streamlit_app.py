@@ -220,29 +220,29 @@ if pagina == "Visão geral":
 
     anomalias = int(ranking["anomalia"].sum())
 
-    c1, c2, c3, c4, c5 = st.columns(5)
+    cols = st.columns(5)
 
-    c1.metric(
+    cols[0].metric(
         "Solicitações",
         format_integer(total),
     )
 
-    c2.metric(
+    cols[1].metric(
         "Pendentes",
         format_percent(taxa_pendente_geral),
     )
 
-    c3.metric(
+    cols[2].metric(
         "Cobertura territorial",
         format_percent(cobertura),
     )
 
-    c4.metric(
+    cols[3].metric(
         "Atenção elevada",
         format_integer(sinais_elevados),
     )
 
-    c5.metric(
+    cols[4].metric(
         "Sinais atípicos",
         format_integer(anomalias),
     )
@@ -256,8 +256,10 @@ if pagina == "Visão geral":
     st.subheader("Evolução das solicitações")
 
     weekly = (
-        filtered
-        .groupby("semana", as_index=False)
+        filtered.groupby(
+            "semana",
+            as_index=False,
+        )
         .agg(
             solicitacoes=("solicitacoes", "sum"),
             pendentes=("pendentes", "sum"),
@@ -364,15 +366,12 @@ if pagina == "Visão geral":
         ranking_display["Variação"] = (
             ranking_display["variacao_percentual"]
         )
-
         ranking_display["Pendência"] = (
             ranking_display["taxa_pendente"] * 100
         )
-
         ranking_display["Tempo médio"] = (
             ranking_display["tempo_medio_dias"]
         )
-
         ranking_display["Atípico"] = np.where(
             ranking_display["anomalia"],
             "Sim",
@@ -484,14 +483,6 @@ elif pagina == "Radar de atenção":
             ],
             size_max=34,
             hover_name="servico",
-            labels={
-                "variacao_grafico":
-                "Variação da demanda (%)",
-                "pendencia_percentual":
-                "Solicitações pendentes (%)",
-                "indice_atencao":
-                "Índice",
-            },
         )
 
         fig_radar.add_vline(
@@ -863,3 +854,34 @@ elif pagina == "Metodologia":
             observações com maior atipicidade estatística.
             """
         )
+
+    st.divider()
+
+    st.subheader(
+        "Índice de Atenção"
+    )
+
+    st.latex(
+        r"I = 0.40C + 0.35P + 0.25T"
+    )
+
+    st.markdown(
+        """
+        **Onde:**
+
+        **C** representa a posição relativa do crescimento
+        da demanda.
+
+        **P** representa a posição relativa da taxa de
+        pendência.
+
+        **T** representa a posição relativa do tempo médio
+        de atendimento.
+
+        Os pesos foram definidos como uma **heurística para
+        o protótipo**. Eles não representam critérios
+        oficiais da Prefeitura e deveriam ser calibrados
+        com especialistas e gestores em uma evolução da
+        solução.
+        """
+    )
