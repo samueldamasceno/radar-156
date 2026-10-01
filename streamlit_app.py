@@ -527,6 +527,71 @@ st.markdown(
     div[data-baseweb="input"] input {
         color: var(--radar-text) !important;
     }
+
+        div[data-baseweb="popover"],
+    div[data-baseweb="popover"] * {
+        color: var(--radar-text) !important;
+    }
+
+    div[data-baseweb="popover"] ul {
+        background: var(--radar-surface-2) !important;
+        border: 2px solid #050506 !important;
+        border-radius: 0 !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+
+    /* Tooltips e ajuda dos widgets */
+    [data-baseweb="tooltip"],
+    [data-baseweb="tooltip"] > div,
+    [role="tooltip"],
+    [role="tooltip"] > div,
+    [data-testid="stTooltipContent"] {
+        background: #202028 !important;
+        color: var(--radar-text) !important;
+        border: 1px solid #454550 !important;
+        border-radius: 7px !important;
+        box-shadow: 4px 4px 0 #050506 !important;
+    }
+
+    [data-baseweb="tooltip"] *,
+    [role="tooltip"] *,
+    [data-testid="stTooltipContent"] * {
+        color: var(--radar-text) !important;
+        background-color: transparent !important;
+    }
+
+    div[data-baseweb="popover"] > div:not(ul) {
+        color: var(--radar-text) !important;
+    }
+
+    div[data-baseweb="popover"] [role="tooltip"],
+    div[data-baseweb="popover"] [data-baseweb="tooltip"] {
+        background: #202028 !important;
+    }
+
+    /* Slider */
+    [data-baseweb="slider"] [role="slider"] {
+        background: var(--radar-red) !important;
+        border: 2px solid #050506 !important;
+        box-shadow: 2px 2px 0 #050506 !important;
+    }
+
+    [data-baseweb="slider"] div[role="progressbar"] {
+        background: var(--radar-red) !important;
+    }
+
+    [data-testid="stSlider"] [role="slider"] {
+        background: var(--radar-red) !important;
+        border-color: #050506 !important;
+    }
+
+    [data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
+        background-color: #34343E !important;
+    }
+
+    [data-testid="stSlider"] div[data-baseweb="slider"] > div > div > div {
+        background-color: var(--radar-red) !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
