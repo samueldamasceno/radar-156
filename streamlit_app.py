@@ -218,9 +218,7 @@ if pagina == "Visão geral":
         ).sum()
     )
 
-    anomalias = int(
-        ranking["anomalia"].sum()
-    )
+    anomalias = int(ranking["anomalia"].sum())
 
     c1, c2, c3, c4, c5 = st.columns(5)
 
@@ -228,18 +226,22 @@ if pagina == "Visão geral":
         "Solicitações",
         format_integer(total),
     )
+
     c2.metric(
         "Pendentes",
         format_percent(taxa_pendente_geral),
     )
+
     c3.metric(
         "Cobertura territorial",
         format_percent(cobertura),
     )
+
     c4.metric(
         "Atenção elevada",
         format_integer(sinais_elevados),
     )
+
     c5.metric(
         "Sinais atípicos",
         format_integer(anomalias),
@@ -592,11 +594,9 @@ elif pagina == "Investigar sinal":
     st.markdown(
         f"### {selected['distrito']}"
     )
-
     st.markdown(
         f"**{selected['servico']}**"
     )
-
     st.caption(
         f"Tema: {selected['tema']}"
     )
@@ -710,7 +710,6 @@ elif pagina == "Investigar sinal":
         use_container_width=True,
     )
 
-
     st.subheader(
         "Por que este sinal recebeu atenção?"
     )
@@ -762,7 +761,6 @@ elif pagina == "Investigar sinal":
         use_container_width=True,
     )
 
-
     reasons = []
 
     if selected["score_crescimento"] >= 75:
@@ -784,10 +782,8 @@ elif pagina == "Investigar sinal":
         )
 
     if reasons:
-
         if len(reasons) == 1:
             reason_text = reasons[0]
-
         else:
             reason_text = (
                 ", ".join(reasons[:-1])
@@ -810,8 +806,60 @@ elif pagina == "Investigar sinal":
             "da combinação dos indicadores."
         )
 
+    st.warning(
+        "O Índice de Atenção não mede gravidade "
+        "do problema e não determina automaticamente "
+        "prioridades de política pública. Ele funciona "
+        "como um sinal para apoiar investigação."
+    )
+
 
 elif pagina == "Metodologia":
-    st.info(
-        "Metodologia em desenvolvimento."
+
+    st.subheader(
+        "Como funciona o Radar 156"
     )
+
+    st.markdown(
+        "O Radar 156 transforma registros operacionais "
+        "do SP156 em sinais analíticos que podem ajudar "
+        "equipes de gestão a identificar mudanças que "
+        "merecem investigação."
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown(
+            """
+            ### Etapa 01 · Coleta
+            Dados públicos dos dois primeiros trimestres
+            de 2026 do SP156.
+
+            ### Etapa 02 · Tratamento
+            Padronização de datas, status, distritos e
+            tratamento de valores ausentes ou não
+            identificáveis.
+
+            ### Etapa 03 · Agregação
+            Os registros são consolidados por semana,
+            distrito, tema e serviço.
+            """
+        )
+
+    with col2:
+        st.markdown(
+            """
+            ### Etapa 04 · Indicadores
+            Volume, crescimento da demanda, pendência e
+            tempo médio de atendimento.
+
+            ### Etapa 05 · Índice
+            Combinação heurística dos indicadores para
+            destacar pontos que merecem investigação.
+
+            ### Etapa 06 · Anomalias
+            Isolation Forest identifica o conjunto de
+            observações com maior atipicidade estatística.
+            """
+        )
