@@ -507,14 +507,12 @@ elif pagina == "Radar de atenção":
     )
 
     if ranking.empty:
-
         st.info(
             "Não existem sinais disponíveis "
             "para esses filtros."
         )
 
     else:
-
         plot_df = ranking.copy()
 
         plot_df[
@@ -551,14 +549,6 @@ elif pagina == "Radar de atenção":
             ],
             size_max=34,
             hover_name="servico",
-            hover_data={
-                "distrito": True,
-                "tema": True,
-                "solicitacoes": True,
-                "indice_atencao": ":.1f",
-                "variacao_grafico": ":.1f",
-                "pendencia_percentual": ":.1f",
-            },
             labels={
                 "variacao_grafico":
                 "Variação da demanda (%)",
@@ -566,25 +556,17 @@ elif pagina == "Radar de atenção":
                 "Solicitações pendentes (%)",
                 "indice_atencao":
                 "Índice",
-                "distrito":
-                "Distrito",
-                "tema":
-                "Tema",
-                "solicitacoes":
-                "Solicitações",
             },
         )
 
         fig_radar.add_vline(
             x=0,
             line_dash="dash",
-            line_width=1,
         )
 
         fig_radar.add_hline(
             y=50,
             line_dash="dash",
-            line_width=1,
         )
 
         st.plotly_chart(
@@ -595,8 +577,7 @@ elif pagina == "Radar de atenção":
         st.caption(
             "Valores de variação superiores a 500% "
             "são limitados visualmente no gráfico para "
-            "preservar a legibilidade. Os valores reais "
-            "continuam armazenados no dataset."
+            "preservar a legibilidade."
         )
 
         st.subheader(
@@ -663,17 +644,13 @@ elif pagina == "Investigar sinal":
     candidates = (
         ranking
         .head(100)
-        .reset_index(
-            drop=True
-        )
+        .reset_index(drop=True)
     )
 
     option = st.selectbox(
         "Sinal para investigar",
         options=list(
-            range(
-                len(candidates)
-            )
+            range(len(candidates))
         ),
         format_func=lambda i: (
             f"{candidates.iloc[i]['distrito']} | "
@@ -682,8 +659,7 @@ elif pagina == "Investigar sinal":
     )
 
     selected = (
-        candidates
-        .iloc[option]
+        candidates.iloc[option]
     )
 
     st.markdown(
@@ -696,6 +672,56 @@ elif pagina == "Investigar sinal":
 
     st.caption(
         f"Tema: {selected['tema']}"
+    )
+
+
+    c1, c2, c3, c4, c5 = (
+        st.columns(5)
+    )
+
+    c1.metric(
+        "Índice de Atenção",
+        (
+            f"{selected['indice_atencao']:.1f}"
+            .replace(".", ",")
+            + "/100"
+        ),
+    )
+
+    c2.metric(
+        "Solicitações",
+        format_integer(
+            selected[
+                "solicitacoes"
+            ]
+        ),
+    )
+
+    c3.metric(
+        "Variação",
+        format_change(
+            selected[
+                "variacao_percentual"
+            ]
+        ),
+    )
+
+    c4.metric(
+        "Pendentes",
+        format_percent(
+            selected[
+                "taxa_pendente"
+            ]
+        ),
+    )
+
+    c5.metric(
+        "Tempo médio",
+        format_days(
+            selected[
+                "tempo_medio_dias"
+            ]
+        ),
     )
 
 
