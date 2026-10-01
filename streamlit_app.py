@@ -22,13 +22,32 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    :root {
+        --radar-red: #FF5C35;
+        --radar-red-soft: #FF8065;
+        --radar-blue: #4D37FF;
+        --radar-sky: #67D8FF;
+        --radar-bg: #0B0B0E;
+        --radar-bg-soft: #111116;
+        --radar-surface: #17171D;
+        --radar-surface-2: #202028;
+        --radar-line: #34343E;
+        --radar-ink: #08080A;
+        --radar-text: #F4F1E8;
+        --radar-muted: #A7A3AD;
+        --radar-muted-2: #77737E;
+        --shadow-sm: 3px 3px 0 #050506;
+        --shadow-md: 5px 5px 0 #050506;
+        --shadow-lg: 8px 8px 0 #050506;
+    }
+
     .stApp {
-        background: #0B0B0E;
-        color: #F4F1E8;
+        background: var(--radar-bg);
+        color: var(--radar-text);
     }
 
     h1, h2, h3, h4, p, label, .stCaption {
-        color: #F4F1E8;
+        color: var(--radar-text);
     }
     </style>
     """,
