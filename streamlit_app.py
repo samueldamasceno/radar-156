@@ -218,7 +218,9 @@ if pagina == "Visão geral":
         ).sum()
     )
 
-    anomalias = int(ranking["anomalia"].sum())
+    anomalias = int(
+        ranking["anomalia"].sum()
+    )
 
     cols = st.columns(5)
 
@@ -937,4 +939,40 @@ elif pagina == "Metodologia":
         "territoriais. Essa decisão evita atribuir uma "
         "localização que não pode ser sustentada diretamente "
         "pelos dados."
+    )
+
+    st.subheader(
+        "Limitações atuais"
+    )
+
+    st.markdown(
+        "- O período histórico ainda é curto, cobrindo apenas o primeiro semestre de 2026.\n"
+        "- Solicitações do SP156 não equivalem diretamente ao número de problemas existentes na cidade.\n"
+        "- Uma mesma situação pode gerar mais de uma solicitação.\n"
+        "- Serviços podem ser executados sem uma solicitação prévia no SP156.\n"
+        "- Parte relevante dos registros não possui distrito nominal identificado.\n"
+        "- Os pesos do Índice de Atenção ainda não foram validados com gestores municipais.\n"
+        "- O baseline utiliza as observações anteriores disponíveis e ainda não modela explicitamente sazonalidade."
+    )
+
+    st.subheader(
+        "Possíveis evoluções"
+    )
+
+    st.markdown(
+        "- Atualização automatizada quando novos dados do SP156 forem publicados.\n"
+        "- Incorporação de um histórico de vários anos.\n"
+        "- Ajuste do índice em conjunto com gestores.\n"
+        "- Modelos específicos por tipo de serviço.\n"
+        "- Detecção de sazonalidade e mudanças estruturais.\n"
+        "- Integração com dados demográficos do IBGE.\n"
+        "- Integração geográfica com camadas do GeoSampa.\n"
+        "- Alertas automáticos para áreas responsáveis.\n"
+        "- Simulação de capacidade operacional e backlog.\n"
+        "- Separação futura entre frontend e API analítica para uma arquitetura de produção."
+    )
+
+    st.info(
+        "Fonte principal: Portal de Dados Abertos "
+        "da Prefeitura de São Paulo, conjunto Dados do SP156."
     )
