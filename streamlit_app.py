@@ -309,6 +309,40 @@ st.markdown(
         font-weight: 650;
         line-height: 1.45;
     }
+
+    .radar-hero {
+        position: relative;
+        overflow: hidden;
+        margin: .35rem 0 1.45rem;
+        padding: 2rem;
+        border: 2px solid #050506;
+        border-radius: 0;
+        background:
+            linear-gradient(
+                115deg,
+                rgba(255,92,53,.98),
+                rgba(224,61,35,.96)
+            );
+        box-shadow: var(--shadow-lg);
+    }
+
+    .hero-title {
+        color: #09090B;
+        font-size: clamp(3.8rem, 8vw, 7rem);
+        line-height: .85;
+        letter-spacing: -.075em;
+        font-weight: 950;
+        text-transform: uppercase;
+    }
+
+    .hero-subtitle {
+        max-width: 820px;
+        margin-top: 1.4rem;
+        color: rgba(8,8,10,.80);
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.62;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -457,19 +491,25 @@ st.sidebar.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("Radar 156")
+st.markdown(
+    """
+    <section class="radar-hero">
+        <div class="hero-title">
+            Radar 156
+        </div>
 
-st.write(
-    "Monitoramento de alterações relevantes "
-    "na demanda por serviços municipais."
+        <div class="hero-subtitle">
+            Monitoramento de alterações relevantes
+            na demanda por serviços municipais.
+            <br>
+            O radar combina comportamento recente,
+            pendência e tempo de atendimento para
+            destacar sinais que merecem investigação.
+        </div>
+    </section>
+    """,
+    unsafe_allow_html=True,
 )
-
-st.caption(
-    "O radar combina comportamento recente, "
-    "pendência e tempo de atendimento para "
-    "destacar sinais que merecem investigação."
-)
-
 
 st.subheader("Filtros")
 
