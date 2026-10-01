@@ -596,92 +596,98 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.subheader("Filtros")
+# ============================================================
+# FILTROS EM DESTAQUE
+# ============================================================
 
-temas = sorted(
-    df["tema"]
-    .dropna()
-    .unique()
-)
+with st.container(key="filter_panel"):
+    st.markdown(
+        """<div class="filter-heading"><div class="filter-title">Painel de análise</div><div class="filter-copy">Ajuste o recorte e todo o radar responde aos filtros</div></div>""",
+        unsafe_allow_html=True,
+    )
 
-tema_selecionado = st.selectbox(
-    "Tema",
-    ["Todos"] + temas,
-)
+    filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(
+        [1.15, 1.15, 1.0, 1.0],
+        gap="medium",
+    )
 
-filtered = df.copy()
+    temas = sorted(df["tema"].dropna().unique())
 
-if tema_selecionado != "Todos":
-    filtered = filtered[
-        filtered["tema"] == tema_selecionado
-    ]
+    with filter_col1:
+        tema_selecionado = st.selectbox(
+            "Tema",
+            ["Todos"] + temas,
+        )
 
+    filtered = df.copy()
 
-distritos = sorted(
-    filtered.loc[
-        filtered["distrito_valido"],
-        "distrito",
-    ]
-    .dropna()
-    .unique()
-)
+    if tema_selecionado != "Todos":
+        filtered = filtered[
+            filtered["tema"] == tema_selecionado
+        ]
 
-distrito_selecionado = st.selectbox(
-    "Distrito",
-    ["Todos"] + distritos,
-)
-
-if distrito_selecionado != "Todos":
-    filtered = filtered[
-        filtered["distrito"]
-        == distrito_selecionado
-    ]
-
-
-semanas = sorted(
-    pd.to_datetime(
-        filtered["semana"]
+    distritos = sorted(
+        filtered.loc[
+            filtered["distrito_valido"],
+            "distrito",
+        ]
         .dropna()
         .unique()
     )
-)
 
-if not semanas:
-    st.warning(
-        "Nenhum dado encontrado para os filtros selecionados."
+    with filter_col2:
+        distrito_selecionado = st.selectbox(
+            "Distrito",
+            ["Todos"] + distritos,
+        )
+
+    if distrito_selecionado != "Todos":
+        filtered = filtered[
+            filtered["distrito"] == distrito_selecionado
+        ]
+
+    semanas = sorted(
+        pd.to_datetime(
+            filtered["semana"].dropna().unique()
+        )
     )
-    st.stop()
 
+    if not semanas:
+        st.warning(
+            "Nenhum dado encontrado para os filtros selecionados."
+        )
+        st.stop()
 
-if len(semanas) >= 2:
-    default_week_index = len(semanas) - 2
-else:
-    default_week_index = 0
+    # a última semana disponível começa em 29/06, então a referência é a penúltima.
+    if len(semanas) >= 2:
+        default_week_index = len(semanas) - 2
+    else:
+        default_week_index = 0
 
+    with filter_col3:
+        semana_selecionada = st.selectbox(
+            "Semana de referência",
+            semanas,
+            index=default_week_index,
+            format_func=lambda date: pd.Timestamp(date).strftime("%d/%m/%Y"),
+        )
 
-semana_selecionada = st.selectbox(
-    "Semana de referência",
-    semanas,
-    index=default_week_index,
-    format_func=lambda date: (
-        pd.Timestamp(date)
-        .strftime("%d/%m/%Y")
-    ),
-)
+    with filter_col4:
+        volume_minimo = st.slider(
+            "Volume mínimo por sinal",
+            min_value=1,
+            max_value=50,
+            value=5,
+            step=1,
+            help=(
+                "Reduz ruído causado por combinações com "
+                "pouquíssimas solicitações."
+            ),
+        )
 
-
-volume_minimo = st.slider(
-    "Volume mínimo por sinal",
-    min_value=1,
-    max_value=50,
-    value=5,
-    step=1,
-    help=(
-        "Reduz ruído causado por combinações com "
-        "pouquíssimas solicitações."
-    ),
-)
-
+# ============================================================
+# SEMANA ATUAL E RANKING
+# ============================================================
 
 current = filtered[
     filtered["semana"]
