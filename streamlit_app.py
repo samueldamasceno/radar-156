@@ -314,7 +314,7 @@ st.markdown(
         position: relative;
         overflow: hidden;
         margin: .35rem 0 1.45rem;
-        padding: 2rem;
+        padding: 0;
         border: 2px solid #050506;
         border-radius: 0;
         background:
@@ -324,6 +324,42 @@ st.markdown(
                 rgba(224,61,35,.96)
             );
         box-shadow: var(--shadow-lg);
+    }
+
+    .radar-hero::before {
+        content:
+            "RADAR 156  •  INTELIGÊNCIA OPERACIONAL  •  SP156  •  DADOS PÚBLICOS";
+
+        display: block;
+        position: relative;
+        z-index: 2;
+        padding: .72rem 1rem;
+        border-bottom: 2px solid #050506;
+        background: #08080A;
+        color: white;
+        font-size: .64rem;
+        font-weight: 900;
+        letter-spacing: .18em;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .radar-hero::after {
+        content: "156";
+        position: absolute;
+        right: -1.2rem;
+        bottom: -3.3rem;
+        color: rgba(8,8,10,.10);
+        font-size: clamp(11rem, 24vw, 24rem);
+        line-height: .75;
+        letter-spacing: -.12em;
+        font-weight: 950;
+        pointer-events: none;
+    }
+
+    .radar-hero > * {
+        margin-left: 2rem;
+        margin-right: 2rem;
     }
 
     .hero-title {
