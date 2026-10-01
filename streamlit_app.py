@@ -18,7 +18,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
 st.markdown(
     """
     <style>
@@ -44,6 +43,23 @@ st.markdown(
     .stApp {
         background: var(--radar-bg);
         color: var(--radar-text);
+    }
+
+    .block-container {
+        max-width: 1520px;
+        padding-top: 1.65rem;
+        padding-bottom: 5rem;
+    }
+
+    #MainMenu,
+    footer {
+        visibility: hidden;
+    }
+
+    [data-testid="stHeader"] {
+        background: rgba(11, 11, 14, .92);
+        border-bottom: 1px solid rgba(255, 255, 255, .06);
+        backdrop-filter: blur(10px);
     }
 
     h1, h2, h3, h4, p, label, .stCaption {
