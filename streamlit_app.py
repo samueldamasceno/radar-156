@@ -523,6 +523,133 @@ st.markdown(
         font-weight: 560;
         line-height: 1.52;
     }
+
+    /* Bloco de Machine Learning */
+    .ml-section {
+        margin: 1.35rem 0 1.6rem;
+    }
+
+    .ml-grid {
+        display: grid;
+        grid-template-columns: minmax(220px, .8fr) minmax(300px, 1.7fr);
+        gap: 1rem;
+        margin-top: .65rem;
+    }
+
+    .ml-card {
+        position: relative;
+        overflow: hidden;
+        padding: 1.25rem 1.3rem;
+        border: 2px solid #050506;
+        background: var(--radar-surface);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .ml-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: var(--radar-blue);
+        border-bottom: 2px solid #050506;
+    }
+
+    .ml-card-anomaly::before {
+        background: var(--radar-red);
+    }
+
+    .ml-label {
+        margin-top: .35rem;
+        color: var(--radar-muted);
+        font-size: .62rem;
+        font-weight: 900;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+    }
+
+    .ml-score {
+        margin-top: .45rem;
+        color: var(--radar-text);
+        font-size: 2.65rem;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: -.065em;
+    }
+
+    .ml-score span {
+        color: var(--radar-muted);
+        font-size: 1rem;
+        letter-spacing: -.02em;
+    }
+
+    .ml-status {
+        display: inline-block;
+        margin-top: .85rem;
+        padding: .38rem .55rem;
+        border: 2px solid #050506;
+        background: var(--radar-blue);
+        color: white;
+        font-size: .66rem;
+        font-weight: 950;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        box-shadow: 2px 2px 0 #050506;
+    }
+
+    .ml-status-anomaly {
+        background: var(--radar-red);
+        color: #08080A;
+    }
+
+    .ml-bar {
+        overflow: hidden;
+        width: 100%;
+        height: 12px;
+        margin-top: 1rem;
+        border: 2px solid #050506;
+        background: #292932;
+    }
+
+    .ml-bar-fill {
+        height: 100%;
+        background: var(--radar-blue);
+    }
+
+    .ml-bar-fill-anomaly {
+        background: var(--radar-red);
+    }
+
+    .ml-copy-title {
+        margin-top: .35rem;
+        color: var(--radar-text);
+        font-size: 1rem;
+        font-weight: 900;
+    }
+
+    .ml-copy {
+        margin-top: .55rem;
+        color: var(--radar-muted);
+        font-size: .87rem;
+        line-height: 1.58;
+    }
+
+    .ml-model {
+        display: inline-block;
+        margin-top: .9rem;
+        color: var(--radar-sky);
+        font-size: .72rem;
+        font-weight: 850;
+        letter-spacing: .04em;
+    }
+
+    @media (max-width: 900px) {
+        .ml-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
     /* Dataframe, gráficos e alertas */
     [data-testid="stDataFrame"] {
         overflow: hidden;
@@ -731,7 +858,7 @@ def standard_layout(fig, height=420):
 if not DATA_FILE.exists():
     st.error(
         "O arquivo radar156.parquet não foi encontrado. "
-        "Execute primeiro: python scripts/prepare_data.py"
+        "Execute primeiro: python scripts/preparar_dados.py"
     )
     st.stop()
 df = load_data()
@@ -1438,18 +1565,70 @@ elif pagina == "Investigar sinal":
             ]
         ),
     )
-    if selected[
-        "anomalia"
-    ]:
-        st.info(
-            "Esta observação está entre o conjunto "
+
+    # ----------------------------------------
+    # MACHINE LEARNING
+    # ----------------------------------------
+
+    st.subheader(
+        "Detecção de anomalias"
+    )
+
+    anomaly_score = selected[
+        "score_anomalia"
+    ]
+
+    is_anomaly = bool(
+        selected[
+            "anomalia"
+        ]
+    )
+
+    if pd.isna(anomaly_score):
+        anomaly_score = 0.0
+
+    anomaly_score = float(
+        anomaly_score
+    )
+
+    if is_anomaly:
+        status_text = (
+            "Atípico pelo modelo"
+        )
+        status_class = (
+            "ml-status ml-status-anomaly"
+        )
+        card_class = (
+            "ml-card ml-card-anomaly"
+        )
+        bar_class = (
+            "ml-bar-fill "
+            "ml-bar-fill-anomaly"
+        )
+        interpretation = (
+            "Esta observação pertence ao conjunto "
             "de maior atipicidade identificado pelo "
             "Isolation Forest."
         )
+    else:
+        status_text = (
+            "Não classificado como anomalia"
+        )
+        status_class = (
+            "ml-status"
+        )
+        card_class = (
+            "ml-card"
+        )
+        bar_class = (
+            "ml-bar-fill"
+        )
+        interpretation = (
+            "O modelo não classificou esta observação "
+            "entre o conjunto de maior atipicidade."
+        )
 
-    # ----------------------------------------
-    # HISTÓRICO
-    # ----------------------------------------
+
 
     history = df[
         (
