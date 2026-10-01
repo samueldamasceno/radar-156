@@ -186,6 +186,18 @@ ranking = ranking.sort_values(
 )
 
 
+if (
+    pd.Timestamp(semana_selecionada)
+    == pd.Timestamp("2026-06-29")
+):
+    st.warning(
+        "A semana iniciada em 29/06/2026 é parcial: "
+        "o conjunto do 2º trimestre possui dados apenas "
+        "até 30/06/2026. Comparações de volume nessa semana "
+        "devem ser interpretadas com cautela."
+    )
+
+
 if pagina == "Visão geral":
 
     st.subheader("Situação na semana selecionada")
