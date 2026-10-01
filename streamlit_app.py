@@ -102,7 +102,6 @@ if tema_selecionado != "Todos":
         filtered["tema"] == tema_selecionado
     ]
 
-
 distritos = sorted(
     filtered.loc[
         filtered["distrito_valido"],
@@ -122,7 +121,6 @@ if distrito_selecionado != "Todos":
         filtered["distrito"] == distrito_selecionado
     ]
 
-
 semanas = sorted(
     pd.to_datetime(
         filtered["semana"].dropna().unique()
@@ -135,12 +133,10 @@ if not semanas:
     )
     st.stop()
 
-
 if len(semanas) >= 2:
     default_week_index = len(semanas) - 2
 else:
     default_week_index = 0
-
 
 semana_selecionada = st.selectbox(
     "Semana de referência",
@@ -150,7 +146,6 @@ semana_selecionada = st.selectbox(
         "%d/%m/%Y"
     ),
 )
-
 
 volume_minimo = st.slider(
     "Volume mínimo por sinal",
@@ -227,25 +222,25 @@ if pagina == "Visão geral":
         ranking["anomalia"].sum()
     )
 
-    col1, col2, col3, col4, col5 = st.columns(5)
+    c1, c2, c3, c4, c5 = st.columns(5)
 
-    col1.metric(
+    c1.metric(
         "Solicitações",
         format_integer(total),
     )
-    col2.metric(
+    c2.metric(
         "Pendentes",
         format_percent(taxa_pendente_geral),
     )
-    col3.metric(
+    c3.metric(
         "Cobertura territorial",
         format_percent(cobertura),
     )
-    col4.metric(
+    c4.metric(
         "Atenção elevada",
         format_integer(sinais_elevados),
     )
-    col5.metric(
+    c5.metric(
         "Sinais atípicos",
         format_integer(anomalias),
     )
@@ -487,14 +482,6 @@ elif pagina == "Radar de atenção":
             ],
             size_max=34,
             hover_name="servico",
-            hover_data={
-                "distrito": True,
-                "tema": True,
-                "solicitacoes": True,
-                "indice_atencao": ":.1f",
-                "variacao_grafico": ":.1f",
-                "pendencia_percentual": ":.1f",
-            },
             labels={
                 "variacao_grafico":
                 "Variação da demanda (%)",
@@ -502,25 +489,17 @@ elif pagina == "Radar de atenção":
                 "Solicitações pendentes (%)",
                 "indice_atencao":
                 "Índice",
-                "distrito":
-                "Distrito",
-                "tema":
-                "Tema",
-                "solicitacoes":
-                "Solicitações",
             },
         )
 
         fig_radar.add_vline(
             x=0,
             line_dash="dash",
-            line_width=1,
         )
 
         fig_radar.add_hline(
             y=50,
             line_dash="dash",
-            line_width=1,
         )
 
         st.plotly_chart(
@@ -531,8 +510,7 @@ elif pagina == "Radar de atenção":
         st.caption(
             "Valores de variação superiores a 500% "
             "são limitados visualmente no gráfico para "
-            "preservar a legibilidade. Os valores reais "
-            "continuam armazenados no dataset."
+            "preservar a legibilidade."
         )
 
         st.subheader(
@@ -562,8 +540,7 @@ elif pagina == "Radar de atenção":
             labels={
                 "indice_atencao":
                 "Índice de Atenção",
-                "identificacao":
-                "",
+                "identificacao": "",
             },
         )
 
@@ -615,9 +592,11 @@ elif pagina == "Investigar sinal":
     st.markdown(
         f"### {selected['distrito']}"
     )
+
     st.markdown(
         f"**{selected['servico']}**"
     )
+
     st.caption(
         f"Tema: {selected['tema']}"
     )
@@ -687,9 +666,7 @@ elif pagina == "Investigar sinal":
 
     history = history.sort_values("semana")
 
-    st.subheader(
-        "Evolução da demanda"
-    )
+    st.subheader("Evolução da demanda")
 
     fig_history = go.Figure()
 
@@ -784,6 +761,54 @@ elif pagina == "Investigar sinal":
         fig_components,
         use_container_width=True,
     )
+
+
+    reasons = []
+
+    if selected["score_crescimento"] >= 75:
+        reasons.append(
+            "crescimento da demanda está entre "
+            "os valores mais elevados da base"
+        )
+
+    if selected["score_pendencia"] >= 75:
+        reasons.append(
+            "taxa de pendência está "
+            "relativamente elevada"
+        )
+
+    if selected["score_tempo"] >= 75:
+        reasons.append(
+            "tempo médio de atendimento está "
+            "relativamente elevado"
+        )
+
+    if reasons:
+
+        if len(reasons) == 1:
+            reason_text = reasons[0]
+
+        else:
+            reason_text = (
+                ", ".join(reasons[:-1])
+                + " e "
+                + reasons[-1]
+            )
+
+        st.markdown(
+            f"**Leitura do sinal**  \n"
+            f"Nesta observação, {reason_text}. "
+            "Esses fatores contribuíram para elevar "
+            "o Índice de Atenção."
+        )
+
+    else:
+        st.markdown(
+            "**Leitura do sinal**  \n"
+            "Nenhum componente isolado está no quartil "
+            "superior da distribuição. O resultado decorre "
+            "da combinação dos indicadores."
+        )
 
 
 elif pagina == "Metodologia":
