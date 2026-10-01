@@ -379,6 +379,64 @@ st.markdown(
         font-weight: 700;
         line-height: 1.62;
     }
+
+    .hero-kicker {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: .6rem;
+        margin-top: 2rem;
+        margin-bottom: 1.15rem;
+        padding: .48rem .7rem;
+        border: 2px solid #050506;
+        background: var(--radar-blue);
+        color: white;
+        font-size: .68rem;
+        font-weight: 950;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .hero-dot {
+        width: 8px;
+        height: 8px;
+        border: 2px solid #050506;
+        border-radius: 999px;
+        background: var(--radar-sky);
+    }
+
+    .hero-title {
+        position: relative;
+        z-index: 1;
+        margin-top: 0;
+        margin-bottom: 0;
+        max-width: 900px;
+        color: #09090B;
+        font-size: clamp(3.8rem, 8vw, 7rem);
+        line-height: .79;
+        letter-spacing: -.085em;
+        font-weight: 950;
+        text-transform: uppercase;
+    }
+
+    .hero-title span {
+        color: white;
+        text-shadow: 3px 3px 0 #09090B;
+    }
+
+    .hero-subtitle {
+        position: relative;
+        z-index: 1;
+        max-width: 820px;
+        margin-top: 1.45rem;
+        margin-bottom: 2.15rem;
+        color: rgba(8,8,10,.80);
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.62;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -530,8 +588,14 @@ st.sidebar.markdown(
 st.markdown(
     """
     <section class="radar-hero">
+
+        <div class="hero-kicker">
+            <span class="hero-dot"></span>
+            Inteligência operacional sobre a demanda municipal
+        </div>
+
         <div class="hero-title">
-            Radar 156
+            Radar <span>156</span>
         </div>
 
         <div class="hero-subtitle">
@@ -542,6 +606,7 @@ st.markdown(
             pendência e tempo de atendimento para
             destacar sinais que merecem investigação.
         </div>
+
     </section>
     """,
     unsafe_allow_html=True,
