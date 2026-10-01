@@ -769,6 +769,21 @@ st.markdown(
     a {
         color: var(--radar-sky);
     }
+
+        .method-copy {
+        max-width: 920px;
+        color: var(--text);
+    }
+
+    .method-copy p {
+        margin: 0 0 .72rem;
+        line-height: 1.62;
+        color: var(--text);
+    }
+
+    .method-copy p:last-child {
+        margin-bottom: 0;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -1954,8 +1969,8 @@ elif pagina == "Metodologia":
     with col2:
         st.markdown(
             """<div class="method-step"><div class="method-number">ETAPA 04</div><div class="method-title">Indicadores</div><div class="method-description">Volume, crescimento da demanda, pendência e tempo médio de atendimento.</div></div>
-        <div class="method-step"><div class="method-number">ETAPA 05</div><div class="method-title">Índice</div><div class="method-description">Combinação heurística dos indicadores para destacar pontos que merecem investigação.</div></div>
-        <div class="method-step"><div class="method-number">ETAPA 06</div><div class="method-title">Anomalias</div><div class="method-description">Isolation Forest identifica o conjunto de observações com maior atipicidade estatística.</div></div>""",
+            <div class="method-step"><div class="method-number">ETAPA 05</div><div class="method-title">Índice</div><div class="method-description">Combinação heurística dos indicadores para destacar pontos que merecem investigação.</div></div>
+            <div class="method-step"><div class="method-number">ETAPA 06</div><div class="method-title">Anomalias</div><div class="method-description">Isolation Forest identifica o conjunto de observações com maior atipicidade estatística.</div></div>""",
             unsafe_allow_html=True,
         )
 
@@ -1970,17 +1985,14 @@ elif pagina == "Metodologia":
     )
 
     st.markdown(
-        """
-**Onde:**
-
-**C** representa a posição relativa do crescimento da demanda.
-
-**P** representa a posição relativa da taxa de pendência.
-
-**T** representa a posição relativa do tempo médio de atendimento.
-
-Os pesos foram definidos como uma **heurística para o protótipo**. Eles não representam critérios oficiais da Prefeitura e deveriam ser calibrados com especialistas e gestores em uma evolução da solução.
-        """
+        """<div class="method-copy">
+        <p><strong>Onde:</strong></p>
+        <p><strong>C</strong> representa a posição relativa do crescimento da demanda.</p>
+        <p><strong>P</strong> representa a posição relativa da taxa de pendência.</p>
+        <p><strong>T</strong> representa a posição relativa do tempo médio de atendimento.</p>
+        <p>Os pesos foram definidos como uma <strong>heurística para o protótipo</strong>. Eles não representam critérios oficiais da Prefeitura e deveriam ser calibrados com especialistas e gestores em uma evolução da solução.</p>
+        </div>""",
+        unsafe_allow_html=True,
     )
 
     st.subheader(
