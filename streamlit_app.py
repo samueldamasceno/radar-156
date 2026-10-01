@@ -442,6 +442,20 @@ pagina = st.sidebar.radio(
     ],
 )
 
+st.sidebar.markdown(
+    """
+    <div class="sidebar-footer">
+        <div class="sidebar-footer-label">
+            Protótipo analítico
+        </div>
+
+        <div class="sidebar-footer-copy">
+            Prefeitura de São Paulo · 2026
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.title("Radar 156")
 
