@@ -285,6 +285,26 @@ if not DATA_FILE.exists():
 
 df = load_data()
 
+st.sidebar.markdown(
+    """
+    <div class="sidebar-brand">
+        <div class="sidebar-brand-kicker">
+            SP156 · Dados públicos
+        </div>
+
+        <div class="sidebar-brand-title">
+            RADAR 156
+        </div>
+
+        <div class="sidebar-brand-line"></div>
+
+        <div class="sidebar-brand-copy">
+            Inteligência operacional sobre a demanda municipal.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 pagina = st.sidebar.radio(
     "Navegação",
