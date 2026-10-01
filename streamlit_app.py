@@ -323,14 +323,10 @@ if pagina == "Visão geral":
     )
 
     if tema_selecionado == "Todos":
-        chart_title = (
-            "Temas com maior demanda"
-        )
+        chart_title = "Temas com maior demanda"
         category_column = "tema"
     else:
-        chart_title = (
-            "Serviços com maior demanda"
-        )
+        chart_title = "Serviços com maior demanda"
         category_column = "servico"
 
     st.subheader(chart_title)
@@ -407,7 +403,6 @@ if pagina == "Visão geral":
             "Nenhum sinal encontrado com "
             "os filtros atuais."
         )
-
     else:
         ranking_display = ranking.head(15).copy()
 
@@ -592,12 +587,6 @@ elif pagina == "Radar de atenção":
             line_width=1,
         )
 
-        fig_radar.update_layout(
-            coloraxis_colorbar=dict(
-                title="Índice",
-            ),
-        )
-
         st.plotly_chart(
             fig_radar,
             use_container_width=True,
@@ -609,7 +598,6 @@ elif pagina == "Radar de atenção":
             "preservar a legibilidade. Os valores reais "
             "continuam armazenados no dataset."
         )
-
 
         st.subheader(
             "Maiores índices de atenção"
@@ -627,13 +615,9 @@ elif pagina == "Radar de atenção":
         top_radar[
             "identificacao"
         ] = (
-            top_radar[
-                "distrito"
-            ]
+            top_radar["distrito"]
             + " · "
-            + top_radar[
-                "servico"
-            ]
+            + top_radar["servico"]
         )
 
         fig_top = px.bar(
@@ -644,8 +628,7 @@ elif pagina == "Radar de atenção":
             labels={
                 "indice_atencao":
                 "Índice de Atenção",
-                "identificacao":
-                "",
+                "identificacao": "",
             },
         )
 
@@ -660,8 +643,59 @@ elif pagina == "Radar de atenção":
 
 
 elif pagina == "Investigar sinal":
-    st.info(
-        "Investigação individual em desenvolvimento."
+
+    st.subheader(
+        "Investigação de sinal"
+    )
+
+    st.caption(
+        "Selecione uma ocorrência para entender "
+        "por que ela apareceu no Radar."
+    )
+
+    if ranking.empty:
+        st.info(
+            "Não existem sinais disponíveis "
+            "para os filtros selecionados."
+        )
+        st.stop()
+
+    candidates = (
+        ranking
+        .head(100)
+        .reset_index(
+            drop=True
+        )
+    )
+
+    option = st.selectbox(
+        "Sinal para investigar",
+        options=list(
+            range(
+                len(candidates)
+            )
+        ),
+        format_func=lambda i: (
+            f"{candidates.iloc[i]['distrito']} | "
+            f"{candidates.iloc[i]['servico']}"
+        ),
+    )
+
+    selected = (
+        candidates
+        .iloc[option]
+    )
+
+    st.markdown(
+        f"### {selected['distrito']}"
+    )
+
+    st.markdown(
+        f"**{selected['servico']}**"
+    )
+
+    st.caption(
+        f"Tema: {selected['tema']}"
     )
 
 
