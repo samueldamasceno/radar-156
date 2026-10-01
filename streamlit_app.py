@@ -146,9 +146,9 @@ st.markdown(
     }
 
     .sidebar-brand {
-    margin: .05rem 0 1rem;
-    padding: .15rem .15rem 1.15rem;
-    border-bottom: 1px solid #2A2A33;
+        margin: .05rem 0 1rem;
+        padding: .15rem .15rem 1.15rem;
+        border-bottom: 1px solid #2A2A33;
     }
 
     .sidebar-brand-kicker {
@@ -185,9 +185,9 @@ st.markdown(
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] {
-    gap: .25rem;
-    margin-top: .15rem;
-    counter-reset: radar-nav;
+        gap: .25rem;
+        margin-top: .15rem;
+        counter-reset: radar-nav;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label {
@@ -286,6 +286,28 @@ st.markdown(
     label:has(input:checked) p {
         color: #FFF5F1 !important;
         font-weight: 900 !important;
+    }
+
+    .sidebar-footer {
+        margin-top: 2rem;
+        padding: 1rem .15rem 0;
+        border-top: 1px solid #2A2A33;
+    }
+
+    .sidebar-footer-label {
+        color: #5E5E68;
+        font-size: .61rem;
+        font-weight: 900;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+    }
+
+    .sidebar-footer-copy {
+        margin-top: .35rem;
+        color: #85858E;
+        font-size: .72rem;
+        font-weight: 650;
+        line-height: 1.45;
     }
     </style>
     """,
