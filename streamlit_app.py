@@ -449,6 +449,84 @@ st.markdown(
         font-weight: 700;
         line-height: 1.62;
     }
+
+    /* Painel de filtros */
+    .filter-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: .4rem;
+    }
+
+    .filter-title {
+        color: var(--radar-text);
+        font-size: .72rem;
+        font-weight: 950;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+    }
+
+    .filter-copy {
+        color: var(--radar-muted);
+        font-size: .8rem;
+        font-weight: 620;
+    }
+
+    .st-key-filter_panel {
+        margin: 0 0 2rem;
+        padding: 1.05rem 1.15rem .55rem;
+        border: 2px solid #050506;
+        border-radius: 0;
+        background: var(--radar-surface);
+        box-shadow: var(--shadow-md);
+    }
+
+    .st-key-filter_panel::before {
+        content: "RECORTE ATIVO";
+        display: inline-block;
+        margin: -.1rem 0 .85rem;
+        padding: .34rem .55rem;
+        border: 2px solid #050506;
+        background: var(--radar-blue);
+        color: white;
+        font-size: .58rem;
+        font-weight: 950;
+        letter-spacing: .16em;
+    }
+
+    .st-key-filter_panel label,
+    .st-key-filter_panel [data-testid="stWidgetLabel"] p {
+        color: var(--radar-text) !important;
+        font-size: .72rem !important;
+        font-weight: 850 !important;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="input"] > div {
+        min-height: 45px;
+        color: var(--radar-text) !important;
+        background: #101015 !important;
+        border: 2px solid #050506 !important;
+        border-radius: 0 !important;
+        box-shadow: 2px 2px 0 #050506 !important;
+        transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    div[data-baseweb="select"] > div:hover,
+    div[data-baseweb="input"] > div:hover {
+        background: #1D1D25 !important;
+        transform: translate(-1px, -1px);
+        box-shadow: 3px 3px 0 #050506 !important;
+    }
+
+    div[data-baseweb="select"] input,
+    div[data-baseweb="select"] span,
+    div[data-baseweb="input"] input {
+        color: var(--radar-text) !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
