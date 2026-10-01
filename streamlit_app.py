@@ -56,22 +56,22 @@ st.markdown(
         color: var(--radar-text);
         background:
             linear-gradient(
-                rgba(255, 255, 255, .018) 1px,
+                rgba(255,255,255,.018) 1px,
                 transparent 1px
             ),
             linear-gradient(
                 90deg,
-                rgba(255, 255, 255, .018) 1px,
+                rgba(255,255,255,.018) 1px,
                 transparent 1px
             ),
             radial-gradient(
                 circle at 78% -10%,
-                rgba(255, 92, 53, .14),
+                rgba(255,92,53,.14),
                 transparent 30rem
             ),
             radial-gradient(
                 circle at 8% 8%,
-                rgba(77, 55, 255, .10),
+                rgba(77,55,255,.10),
                 transparent 28rem
             ),
             var(--radar-bg);
@@ -96,8 +96,8 @@ st.markdown(
     }
 
     [data-testid="stHeader"] {
-        background: rgba(11, 11, 14, .92);
-        border-bottom: 1px solid rgba(255, 255, 255, .06);
+        background: rgba(11,11,14,.92);
+        border-bottom: 1px solid rgba(255,255,255,.06);
         backdrop-filter: blur(10px);
     }
 
@@ -126,6 +126,23 @@ st.markdown(
     h3 {
         letter-spacing: -.035em !important;
         font-weight: 850 !important;
+    }
+
+    [data-testid="stSidebar"] {
+        background:
+            radial-gradient(
+                circle at 0% 0%,
+                rgba(255,92,53,.06),
+                transparent 16rem
+            ),
+            #0D0D11;
+
+        border-right: 1px solid #292932;
+        box-shadow: none;
+    }
+
+    [data-testid="stSidebar"] > div:first-child {
+        padding: 1.25rem 1rem 1.15rem;
     }
     </style>
     """,
