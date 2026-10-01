@@ -198,10 +198,11 @@ if pagina == "Visão geral":
     total = int(current["solicitacoes"].sum())
     pendentes = int(current["pendentes"].sum())
 
-    if total > 0:
-        taxa_pendente_geral = pendentes / total
-    else:
-        taxa_pendente_geral = np.nan
+    taxa_pendente_geral = (
+        pendentes / total
+        if total > 0
+        else np.nan
+    )
 
     territorial_volume = int(
         current.loc[
@@ -210,10 +211,11 @@ if pagina == "Visão geral":
         ].sum()
     )
 
-    if total > 0:
-        cobertura = territorial_volume / total
-    else:
-        cobertura = np.nan
+    cobertura = (
+        territorial_volume / total
+        if total > 0
+        else np.nan
+    )
 
     sinais_elevados = int(
         (
@@ -221,7 +223,9 @@ if pagina == "Visão geral":
         ).sum()
     )
 
-    anomalias = int(ranking["anomalia"].sum())
+    anomalias = int(
+        ranking["anomalia"].sum()
+    )
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -229,22 +233,18 @@ if pagina == "Visão geral":
         "Solicitações",
         format_integer(total),
     )
-
     col2.metric(
         "Pendentes",
         format_percent(taxa_pendente_geral),
     )
-
     col3.metric(
         "Cobertura territorial",
         format_percent(cobertura),
     )
-
     col4.metric(
         "Atenção elevada",
         format_integer(sinais_elevados),
     )
-
     col5.metric(
         "Sinais atípicos",
         format_integer(anomalias),
@@ -260,10 +260,7 @@ if pagina == "Visão geral":
 
     weekly = (
         filtered
-        .groupby(
-            "semana",
-            as_index=False,
-        )
+        .groupby("semana", as_index=False)
         .agg(
             solicitacoes=("solicitacoes", "sum"),
             pendentes=("pendentes", "sum"),
@@ -618,11 +615,9 @@ elif pagina == "Investigar sinal":
     st.markdown(
         f"### {selected['distrito']}"
     )
-
     st.markdown(
         f"**{selected['servico']}**"
     )
-
     st.caption(
         f"Tema: {selected['tema']}"
     )
@@ -690,9 +685,7 @@ elif pagina == "Investigar sinal":
         )
     ].copy()
 
-    history = history.sort_values(
-        "semana"
-    )
+    history = history.sort_values("semana")
 
     st.subheader(
         "Evolução da demanda"
@@ -737,6 +730,58 @@ elif pagina == "Investigar sinal":
 
     st.plotly_chart(
         fig_history,
+        use_container_width=True,
+    )
+
+
+    st.subheader(
+        "Por que este sinal recebeu atenção?"
+    )
+
+    component_data = pd.DataFrame(
+        {
+            "Componente": [
+                "Crescimento da demanda",
+                "Pendência",
+                "Tempo de atendimento",
+            ],
+            "Score": [
+                selected["score_crescimento"],
+                selected["score_pendencia"],
+                selected["score_tempo"],
+            ],
+            "Peso": [
+                "40%",
+                "35%",
+                "25%",
+            ],
+        }
+    )
+
+    fig_components = px.bar(
+        component_data,
+        x="Score",
+        y="Componente",
+        orientation="h",
+        text="Peso",
+        labels={
+            "Score":
+            "Posição relativa no período",
+            "Componente":
+            "",
+        },
+    )
+
+    fig_components.update_xaxes(
+        range=[0, 100]
+    )
+
+    fig_components.update_layout(
+        showlegend=False,
+    )
+
+    st.plotly_chart(
+        fig_components,
         use_container_width=True,
     )
 
