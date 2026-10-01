@@ -528,7 +528,7 @@ st.markdown(
         color: var(--radar-text) !important;
     }
 
-        div[data-baseweb="popover"],
+    div[data-baseweb="popover"],
     div[data-baseweb="popover"] * {
         color: var(--radar-text) !important;
     }
@@ -591,6 +591,129 @@ st.markdown(
 
     [data-testid="stSlider"] div[data-baseweb="slider"] > div > div > div {
         background-color: var(--radar-red) !important;
+    }
+
+        /* KPIs */
+    [data-testid="stMetric"] {
+        position: relative;
+        overflow: hidden;
+        min-height: 126px;
+        padding: 1.15rem 1.15rem 1rem;
+        border: 2px solid #050506;
+        border-radius: 0;
+        background: var(--radar-surface);
+        box-shadow: var(--shadow-sm);
+    }
+
+    [data-testid="stMetric"]::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 8px;
+        border-bottom: 2px solid #050506;
+        background: var(--radar-red);
+    }
+
+    [data-testid="stMetric"]:nth-of-type(even)::before {
+        background: var(--radar-blue);
+    }
+
+    [data-testid="stMetricLabel"] {
+        margin-top: .3rem;
+        color: var(--radar-muted) !important;
+        font-size: .68rem !important;
+        font-weight: 900 !important;
+        letter-spacing: .1em !important;
+        text-transform: uppercase;
+    }
+
+    [data-testid="stMetricValue"] {
+        color: var(--radar-text) !important;
+        font-size: 1.85rem !important;
+        font-weight: 950 !important;
+        letter-spacing: -.055em !important;
+    }
+
+    [data-testid="stMetricDelta"] {
+        color: var(--radar-muted) !important;
+        font-weight: 750 !important;
+    }
+
+        /* Dataframe, gráficos e alertas */
+    [data-testid="stDataFrame"] {
+        overflow: hidden;
+        border: 2px solid #050506;
+        border-radius: 0;
+        background: var(--radar-surface);
+        box-shadow: var(--shadow-md);
+    }
+
+    .js-plotly-plot {
+        overflow: hidden;
+        border: 2px solid #050506;
+        border-radius: 0;
+        background: var(--radar-surface);
+        box-shadow: var(--shadow-md);
+    }
+
+    [data-testid="stAlert"] {
+        border: 2px solid #050506 !important;
+        border-radius: 0 !important;
+        background: #18181F !important;
+        box-shadow: var(--shadow-sm);
+    }
+
+    [data-testid="stAlert"] p {
+        color: var(--radar-text) !important;
+        font-weight: 650;
+    }
+
+    [data-testid="stAlert"] svg {
+        color: var(--radar-red) !important;
+    }
+
+    hr {
+        border-color: #303039 !important;
+        opacity: 1;
+    }
+
+    .stCaption,
+    [data-testid="stCaptionContainer"] p {
+        color: var(--radar-muted) !important;
+        font-weight: 580;
+    }
+
+    code {
+        border: 1px solid var(--radar-line);
+        border-radius: 0;
+        background: var(--radar-surface) !important;
+        color: var(--radar-sky) !important;
+    }
+
+        /* Links e botões nativos */
+    .stButton > button,
+    .stDownloadButton > button {
+        border: 2px solid #050506 !important;
+        border-radius: 0 !important;
+        background: var(--radar-red) !important;
+        color: #08080A !important;
+        font-weight: 900 !important;
+        box-shadow: var(--shadow-sm) !important;
+        transition: transform .15s ease, box-shadow .15s ease, background .15s ease !important;
+    }
+
+    .stButton > button:hover,
+    .stDownloadButton > button:hover {
+        transform: translate(-1px, -1px);
+        background: var(--radar-blue) !important;
+        color: white !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+
+    a {
+        color: var(--radar-sky);
     }
     </style>
     """,
